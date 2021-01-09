@@ -1,9 +1,9 @@
 import * as React from "react";
 import {observer} from "mobx-react";
-import UserStore from "stores/UserStore";
+import User from "stores/User";
 
 @observer
-export default class UserName extends React.Component<{ user: UserStore }, {}> {
+export default class UserName extends React.Component<{ user: User }, {}> {
     render() {
         return (
             <div>

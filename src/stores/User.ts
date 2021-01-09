@@ -1,4 +1,4 @@
-export default class UserStore {
+export default class User {
     name: string
     id: number
     constructor(id: number, name: string) {

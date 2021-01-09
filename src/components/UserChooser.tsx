@@ -5,12 +5,16 @@ import style from 'style.styl'
 import UserName from "./UserName";
 
 @observer
-export default class UserChooser extends React.Component<{ appState: AppStore }, {}> {
+export default class UserChooser extends React.Component<{ appStore: AppStore }, {}> {
+    componentDidMount() {
+        this.props.appStore.usersStore.fetchUsers()
+    }
+
     render() {
         return (
             <main className={style.main}>
                 {
-                    this.props.appState.usersStore.users.map(
+                    this.props.appStore.usersStore.users.map(
                         (user, idx) => (
                             <UserName key={idx} user={user}/>
                         )

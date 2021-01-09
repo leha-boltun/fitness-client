@@ -1,25 +1,29 @@
-import UserStore from "./UserStore";
+import User from "./User";
 import {action, makeObservable, observable} from "mobx";
-import {Configuration, UsersControllerApi} from "services/api";
-import HOST from 'host'
+import ApiHelper from "./ApiHelper";
 
 export default class UsersStore {
     @observable
-    users: UserStore[] = []
+    users: User[] = []
+    private apiHelper: ApiHelper
 
-    constructor() {
+    constructor(apiHelper: ApiHelper) {
+        this.apiHelper = apiHelper
         makeObservable(this)
-        new UsersControllerApi(new Configuration(), HOST).getUsersUsingGET().then(
+    }
+
+    fetchUsers() {
+        this.apiHelper.usersApi!!.getUsersUsingGET().then(
             (resp) => {
                 this.setUsers(resp.map((user) => {
-                    return new UserStore(user.id, user.name)
+                    return new User(user.id, user.name)
                 }))
             }
         )
     }
 
     @action
-    setUsers(users: UserStore[]) {
+    setUsers(users: User[]) {
         this.users = users
     }
 }
