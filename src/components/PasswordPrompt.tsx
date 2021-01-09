@@ -23,7 +23,8 @@ export default class PasswordPrompt extends React.Component<IPasswordPrompt & Ro
         const authStore = this.props.appStore.authStore
         return (
             authStore.authState != AuthState.UNKNOWN &&
-            <div>
+            <main>
+                <h1>Авторизация</h1>
                 <Formik
                     initialValues={{login: '', password: ''}}
                     validate={values => {
@@ -67,7 +68,7 @@ export default class PasswordPrompt extends React.Component<IPasswordPrompt & Ro
                         </Form>
                     )}
                 </Formik>
-            </div>
+            </main>
         )
     }
 }

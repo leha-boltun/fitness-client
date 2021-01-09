@@ -6,16 +6,19 @@ import {BrowserRouter, Route} from "react-router-dom";
 import PrivateRoute from "components/PrivateRoute";
 import "reset.css"
 import PasswordPrompt from "./components/PasswordPrompt";
+import style from "./style.styl";
 
 const appStore = new AppStore();
 ReactDOM.render(
     <BrowserRouter>
-        <PrivateRoute appStore={appStore} exact path='/' component={ () =>
-            <UserChooser appStore={appStore}/>
-        }/>
-        <Route exact path='/login' component={ (props: any) =>
-            <PasswordPrompt appStore={appStore} {...props}/>
-        }/>
+        <div className={style.main}>
+            <PrivateRoute appStore={appStore} exact path='/' component={() =>
+                <UserChooser appStore={appStore}/>
+            }/>
+            <Route exact path='/login' component={(props: any) =>
+                <PasswordPrompt appStore={appStore} {...props}/>
+            }/>
+        </div>
     </BrowserRouter>,
     document.getElementById('root')
 );
