@@ -45,6 +45,11 @@ export default class UserStore {
         this.id = id
     }
 
+    @action
+    doAddWorkout(workout: Workout) {
+        this.workouts!!.push(workout)
+    }
+
     init(id: number) {
         Promise.all([this.apiHelper.userApi!!.getMainUsingGET(id).then( (main) => {
             this.setMain(new UserMain(main.name));
@@ -52,5 +57,11 @@ export default class UserStore {
         this.apiHelper.userApi!!.getWorkoutsUsingGET(id).then((workouts) => {
             this.setWorkouts(workouts.map( (w) => new Workout(w.id, moment(w.wdate, false).toDate()) ))
         })]).then(() => {this.setId(id)})
+    }
+
+    @action.bound
+    addWorkout(onAdd: (workout: Workout) => any) {
+        this.apiHelper.userApi!!.newWorkoutUsingPOST(this.id)
+            .then( (w) => onAdd(new Workout(w.id, moment(w.wdate, false).toDate())) )
     }
 }
