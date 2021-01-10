@@ -62,7 +62,7 @@ export class BaseAPI {
         this.configuration = configuration;
         this.basePath = configuration.basePath || this.basePath;
     }
-};
+}
 
 /**
  *
@@ -94,6 +94,40 @@ export interface DUser {
      * @memberof DUser
      */
     name: string;
+}
+
+/**
+ * 
+ * @export
+ * @interface DUserMain
+ */
+export interface DUserMain {
+    /**
+     * 
+     * @type {string}
+     * @memberof DUserMain
+     */
+    name: string;
+}
+
+/**
+ * 
+ * @export
+ * @interface DWorkout
+ */
+export interface DWorkout {
+    /**
+     * 
+     * @type {number}
+     * @memberof DWorkout
+     */
+    id: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof DWorkout
+     */
+    wdate: string;
 }
 
 /**
@@ -846,6 +880,194 @@ export class PingApi extends BaseAPI {
      */
     public pingUsingGET(options?: any) {
         return PingApiFp(this.configuration).pingUsingGET(options)(this.fetch, this.basePath);
+    }
+
+}
+
+/**
+ * UserControllerApi - fetch parameter creator
+ * @export
+ */
+export const UserControllerApiFetchParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary getMain
+         * @param {number} userId userId
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getMainUsingGET(userId: number, options: any = {}): FetchArgs {
+            // verify required parameter 'userId' is not null or undefined
+            if (userId === null || userId === undefined) {
+                throw new RequiredError('userId','Required parameter userId was null or undefined when calling getMainUsingGET.');
+            }
+            const localVarPath = `/pi/user/{userId}/main`
+                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
+            const localVarUrlObj = url.parse(localVarPath, true);
+            const localVarRequestOptions = Object.assign({ method: 'GET' }, options);
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication basicAuth required
+            // http basic authentication required
+            if (configuration && (configuration.username || configuration.password)) {
+                localVarHeaderParameter["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+            }
+
+            localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = Object.assign({}, localVarHeaderParameter, options.headers);
+
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary getWorkouts
+         * @param {number} userId userId
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getWorkoutsUsingGET(userId: number, options: any = {}): FetchArgs {
+            // verify required parameter 'userId' is not null or undefined
+            if (userId === null || userId === undefined) {
+                throw new RequiredError('userId','Required parameter userId was null or undefined when calling getWorkoutsUsingGET.');
+            }
+            const localVarPath = `/pi/user/{userId}/workouts`
+                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
+            const localVarUrlObj = url.parse(localVarPath, true);
+            const localVarRequestOptions = Object.assign({ method: 'GET' }, options);
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication basicAuth required
+            // http basic authentication required
+            if (configuration && (configuration.username || configuration.password)) {
+                localVarHeaderParameter["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+            }
+
+            localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = Object.assign({}, localVarHeaderParameter, options.headers);
+
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * UserControllerApi - functional programming interface
+ * @export
+ */
+export const UserControllerApiFp = function(configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary getMain
+         * @param {number} userId userId
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getMainUsingGET(userId: number, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<DUserMain> {
+            const localVarFetchArgs = UserControllerApiFetchParamCreator(configuration).getMainUsingGET(userId, options);
+            return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
+                return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json();
+                    } else {
+                        throw response;
+                    }
+                });
+            };
+        },
+        /**
+         * 
+         * @summary getWorkouts
+         * @param {number} userId userId
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getWorkoutsUsingGET(userId: number, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<Array<DWorkout>> {
+            const localVarFetchArgs = UserControllerApiFetchParamCreator(configuration).getWorkoutsUsingGET(userId, options);
+            return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
+                return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json();
+                    } else {
+                        throw response;
+                    }
+                });
+            };
+        },
+    }
+};
+
+/**
+ * UserControllerApi - factory interface
+ * @export
+ */
+export const UserControllerApiFactory = function (configuration?: Configuration, fetch?: FetchAPI, basePath?: string) {
+    return {
+        /**
+         * 
+         * @summary getMain
+         * @param {number} userId userId
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getMainUsingGET(userId: number, options?: any) {
+            return UserControllerApiFp(configuration).getMainUsingGET(userId, options)(fetch, basePath);
+        },
+        /**
+         * 
+         * @summary getWorkouts
+         * @param {number} userId userId
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getWorkoutsUsingGET(userId: number, options?: any) {
+            return UserControllerApiFp(configuration).getWorkoutsUsingGET(userId, options)(fetch, basePath);
+        },
+    };
+};
+
+/**
+ * UserControllerApi - object-oriented interface
+ * @export
+ * @class UserControllerApi
+ * @extends {BaseAPI}
+ */
+export class UserControllerApi extends BaseAPI {
+    /**
+     * 
+     * @summary getMain
+     * @param {number} userId userId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UserControllerApi
+     */
+    public getMainUsingGET(userId: number, options?: any) {
+        return UserControllerApiFp(this.configuration).getMainUsingGET(userId, options)(this.fetch, this.basePath);
+    }
+
+    /**
+     * 
+     * @summary getWorkouts
+     * @param {number} userId userId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UserControllerApi
+     */
+    public getWorkoutsUsingGET(userId: number, options?: any) {
+        return UserControllerApiFp(this.configuration).getWorkoutsUsingGET(userId, options)(this.fetch, this.basePath);
     }
 
 }

@@ -3,22 +3,14 @@ import * as React from "react";
 import AppStore from "stores/AppStore";
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import {AuthState} from "stores/AuthStore";
-import {RouteComponentProps} from "react-router-dom";
 
 interface IPasswordPrompt {
     appStore: AppStore
+    redirUrl: string
 }
 
 @observer
-export default class PasswordPrompt extends React.Component<IPasswordPrompt & RouteComponentProps> {
-    componentDidMount() {
-        this.props.appStore.authStore.checkCookies((isOk) => {
-            if (isOk) {
-                this.props.history.replace("/")
-            }
-        })
-    }
-
+export default class PasswordPrompt extends React.Component<IPasswordPrompt> {
     render() {
         const authStore = this.props.appStore.authStore
         return (
@@ -38,11 +30,8 @@ export default class PasswordPrompt extends React.Component<IPasswordPrompt & Ro
                         return errors;
                     }}
                     onSubmit={(values, {setSubmitting}) => {
-                        authStore.checkAuth(values.login, values.password, (isOk) => {
+                        authStore.checkAuth(values.login, values.password, () => {
                             setSubmitting(false)
-                            if (isOk) {
-                                this.props.history.replace("/")
-                            }
                         })
                     }}
                 >

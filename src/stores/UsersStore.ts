@@ -1,10 +1,10 @@
-import User from "./User";
+import UserName from "./UserName";
 import {action, makeObservable, observable} from "mobx";
 import ApiHelper from "./ApiHelper";
 
 export default class UsersStore {
     @observable
-    users: User[] = []
+    userNames: UserName[] = []
     private apiHelper: ApiHelper
 
     constructor(apiHelper: ApiHelper) {
@@ -16,14 +16,14 @@ export default class UsersStore {
         this.apiHelper.usersApi!!.getUsersUsingGET().then(
             (resp) => {
                 this.setUsers(resp.map((user) => {
-                    return new User(user.id, user.name)
+                    return new UserName(user.id, user.name)
                 }))
             }
         )
     }
 
     @action
-    setUsers(users: User[]) {
-        this.users = users
+    setUsers(users: UserName[]) {
+        this.userNames = users
     }
 }
