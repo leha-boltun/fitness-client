@@ -5,9 +5,13 @@ export default class Workout {
     @observable
     wdate: Date
 
-    constructor(id: number, wdate: Date) {
+    @observable
+    finished: boolean
+
+    constructor(id: number, wdate: Date, finished: boolean) {
         this.id = id
         this.wdate = wdate
+        this.finished = finished
         makeObservable(this)
     }
 }

@@ -3,6 +3,7 @@ import React from "react";
 import AppStore from "stores/AppStore";
 import moment from "moment";
 import {RouteComponentProps} from "react-router-dom";
+import Workout from "../stores/Workout";
 
 interface IUserDisp {
     id: number,
@@ -21,6 +22,10 @@ export default class UserDisp extends React.Component<IUserDisp & RouteComponent
         })
     }
 
+    openWorkout = (workout: Workout) => {
+        this.props.history.push("/workout/" + workout.id)
+    }
+
     render() {
         const userStore = this.props.appStore.userStore
         return (
@@ -32,7 +37,9 @@ export default class UserDisp extends React.Component<IUserDisp & RouteComponent
                     {
                         userStore.workouts!!.map(
                             (workout, idx) =>
-                                (<div key={idx}>Тренировка {moment(workout.wdate).format("DD.MM.YYYY")}</div>)
+                                (<div key={idx} onClick={
+                                    this.openWorkout.bind(this, workout)
+                                }>Тренировка {moment(workout.wdate).format("DD.MM.YYYY")} {workout.finished && " - Завершена"}</div>)
                         )
                     }
                 </div>

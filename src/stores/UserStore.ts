@@ -55,13 +55,13 @@ export default class UserStore {
             this.setMain(new UserMain(main.name));
         }),
         this.apiHelper.userApi!!.getWorkoutsUsingGET(id).then((workouts) => {
-            this.setWorkouts(workouts.map( (w) => new Workout(w.id, moment(w.wdate, false).toDate()) ))
+            this.setWorkouts(workouts.map( (w) => new Workout(w.id, moment(w.wdate, false).toDate(), w.finished) ))
         })]).then(() => {this.setId(id)})
     }
 
     @action.bound
     addWorkout(onAdd: (workout: Workout) => any) {
         this.apiHelper.userApi!!.newWorkoutUsingPOST(this.id)
-            .then( (w) => onAdd(new Workout(w.id, moment(w.wdate, false).toDate())) )
+            .then( (w) => onAdd(new Workout(w.id, moment(w.wdate, false).toDate(), w.finished)) )
     }
 }
