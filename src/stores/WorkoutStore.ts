@@ -74,7 +74,7 @@ export default class WorkoutStore {
             }), this.apiHelper.workoutApi!!.getTimestampsUsingGET(id).then((timeStamps) => {
                 this.setTimeStamps(timeStamps.map((t) => new TimeStamp(t.time, t.type)))
             }), this.apiHelper.workoutApi?.getExersUsingGET(id).then( (exers) => {
-                this.setExers(exers.map(exer => new WorkoutExer(exer.id, exer.name)))
+                this.setExers(exers.map(exer => new WorkoutExer(exer.id, exer.name, this.apiHelper)))
             })
         ]).then(() => {
             this.setId(id)

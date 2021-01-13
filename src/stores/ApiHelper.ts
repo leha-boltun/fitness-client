@@ -4,8 +4,11 @@ import {
     ProgsControllerApi,
     UserControllerApi,
     UsersControllerApi,
-    WorkoutControllerApi
+    WorkoutControllerApi,
+    WorkoutExerControllerApi,
+    WsetControllerApi
 } from "services/api";
+
 import HOST from "host";
 
 export default class ApiHelper {
@@ -14,6 +17,8 @@ export default class ApiHelper {
     userApi?: UserControllerApi
     workoutApi?: WorkoutControllerApi
     progsApi?: ProgsControllerApi
+    workoutExerApi?: WorkoutExerControllerApi
+    wsetApi?: WsetControllerApi
 
     createPing(login: string, password: string) {
         return new PingApi(new Configuration({username: login, password: password}), HOST)
@@ -26,5 +31,7 @@ export default class ApiHelper {
         this.userApi = new UserControllerApi(config, HOST)
         this.workoutApi = new WorkoutControllerApi(config, HOST)
         this.progsApi = new ProgsControllerApi(config, HOST)
+        this.workoutExerApi = new WorkoutExerControllerApi(config, HOST)
+        this.wsetApi = new WsetControllerApi(config, HOST)
     }
 }

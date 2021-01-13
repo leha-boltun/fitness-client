@@ -3,6 +3,8 @@ import React from "react";
 import {RouteComponentProps} from "react-router-dom";
 import AppStore from "../stores/AppStore";
 import moment from "moment";
+import {ErrorMessage, Field, Form, Formik} from "formik";
+import style from 'style.styl'
 
 interface IWorkoutDisp {
     id: number
@@ -29,8 +31,66 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                                 : <div>Тренировка завершена</div>
                         }
                         {
-                            workoutStore.workoutExers!!.map((workoutExer, idx) => (
-                                <div key={idx}>{workoutExer.name}</div>
+                            workoutStore.workoutExers!!.map((workoutExer, exerIdx) => (
+                                <div key={exerIdx}>
+                                    <div>{workoutExer.name}</div>
+                                    <Formik
+                                        initialValues={{weight: '', count: ''}}
+                                        validate={values => {
+                                            const errors: any = {};
+                                            if (values.weight === '') {
+                                                errors.weight = '!';
+                                            }
+                                            if (values.count === '') {
+                                                errors.count = "!"
+                                            }
+                                            return errors;
+                                        }}
+                                        onSubmit={(values, {setSubmitting, resetForm}) => {
+                                            workoutExer.addWset(values.weight, values.count, () => {
+                                                setSubmitting(false)
+                                                resetForm()
+                                            })
+                                        }}
+                                    >
+                                        <Form>
+                                            <table className={style.weightTable}>
+                                                <tbody>
+                                                <tr>
+                                                    {
+                                                        workoutExer.wsets.map((wset, idx) => (
+                                                            <td key={idx}>{wset.weight}</td>
+                                                        ))
+                                                    }
+                                                    <td className={style.specTd} >
+                                                        <Field autoComplete="off"
+                                                               className={style.weight} type="weight" name="weight"
+                                                               placeholder="Вес"/>
+                                                        <ErrorMessage name="weight" component="span"/>
+                                                    </td>
+                                                    <td  className={style.specTd}  rowSpan={2}>
+                                                        <button type="submit">
+                                                            +
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    {
+                                                        workoutExer.wsets.map((wset, idx) => (
+                                                            <td key={idx}>{wset.count}</td>
+                                                        ))
+                                                    }
+                                                    <td className={style.specTd}>
+                                                        <Field autoComplete="off" className={style.count} type="count" name="count"
+                                                               placeholder="Число"/>
+                                                        <ErrorMessage name="count" component="span"/>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </Form>
+                                    </Formik>
+                                </div>
                             ))
                         }
                         {
