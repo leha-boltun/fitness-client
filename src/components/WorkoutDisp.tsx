@@ -24,11 +24,17 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                     <main>
                         <h1>Тренировка {moment(workoutStore.main!!.wdate).format("DD.MM.YYYY")}</h1>
                         {
-                            !workoutStore.main!!.finished ? <button onClick={workoutStore.doNext}>{workoutStore.next!!}</button>
+                            !workoutStore.main!!.finished ?
+                                <button onClick={workoutStore.doNext}>{workoutStore.next!!}</button>
                                 : <div>Тренировка завершена</div>
                         }
                         {
-                            workoutStore.timeStamps!!.map( (timeStamp, idx) =>
+                            workoutStore.workoutExers!!.map((workoutExer, idx) => (
+                                <div key={idx}>{workoutExer.name}</div>
+                            ))
+                        }
+                        {
+                            workoutStore.timeStamps!!.map((timeStamp, idx) =>
                                 <div key={idx}>{timeStamp.name} - {timeStamp.time}</div>
                             )
                         }

@@ -3,6 +3,7 @@ import ApiHelper from "./ApiHelper";
 import moment from "moment";
 import WorkoutMain from "./WorkoutMain";
 import TimeStamp from "./TimeStamp";
+import WorkoutExer from "./WorkoutExer";
 
 export default class WorkoutStore {
     @observable
@@ -13,6 +14,9 @@ export default class WorkoutStore {
 
     @observable
     timeStamps?: TimeStamp[] = undefined
+
+    @observable
+    workoutExers?: WorkoutExer[] = undefined
 
     @observable
     private id: number = -1
@@ -31,6 +35,11 @@ export default class WorkoutStore {
     @action
     reset() {
         this.id = -1
+    }
+
+    @action
+    setExers(exers: WorkoutExer[]) {
+        this.workoutExers = exers
     }
 
     @action
@@ -64,6 +73,8 @@ export default class WorkoutStore {
                 }
             }), this.apiHelper.workoutApi!!.getTimestampsUsingGET(id).then((timeStamps) => {
                 this.setTimeStamps(timeStamps.map((t) => new TimeStamp(t.time, t.type)))
+            }), this.apiHelper.workoutApi?.getExersUsingGET(id).then( (exers) => {
+                this.setExers(exers.map(exer => new WorkoutExer(exer.id, exer.name)))
             })
         ]).then(() => {
             this.setId(id)
