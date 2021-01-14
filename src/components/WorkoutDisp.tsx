@@ -62,17 +62,21 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                                                             <td key={idx}>{wset.weight}</td>
                                                         ))
                                                     }
-                                                    <td className={style.specTd} >
-                                                        <Field autoComplete="off"
-                                                               className={style.weight} type="weight" name="weight"
-                                                               placeholder="Вес"/>
-                                                        <ErrorMessage name="weight" component="span"/>
-                                                    </td>
-                                                    <td  className={style.specTd}  rowSpan={2}>
-                                                        <button type="submit">
-                                                            +
-                                                        </button>
-                                                    </td>
+                                                    {(workoutStore.canAddWsets &&
+                                                        <td className={style.specTd}>
+                                                            <Field autoComplete="off"
+                                                                   className={style.weight} type="weight" name="weight"
+                                                                   placeholder="Вес"/>
+                                                            <ErrorMessage name="weight" component="span"/>
+                                                        </td>
+                                                    )}
+                                                    {(workoutStore.canAddWsets &&
+                                                        <td className={style.specTd} rowSpan={2}>
+                                                            <button type="submit">
+                                                                +
+                                                            </button>
+                                                        </td>
+                                                    )}
                                                 </tr>
                                                 <tr>
                                                     {
@@ -80,11 +84,14 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                                                             <td key={idx}>{wset.count}</td>
                                                         ))
                                                     }
-                                                    <td className={style.specTd}>
-                                                        <Field autoComplete="off" className={style.count} type="count" name="count"
-                                                               placeholder="Число"/>
-                                                        <ErrorMessage name="count" component="span"/>
-                                                    </td>
+                                                    {(workoutStore.canAddWsets &&
+                                                        <td className={style.specTd}>
+                                                            <Field autoComplete="off" className={style.count}
+                                                                   type="count" name="count"
+                                                                   placeholder="Число"/>
+                                                            <ErrorMessage name="count" component="span"/>
+                                                        </td>
+                                                    )}
                                                 </tr>
                                                 </tbody>
                                             </table>

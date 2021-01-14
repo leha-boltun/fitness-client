@@ -13,6 +13,9 @@ export default class WorkoutStore {
     next?: string = undefined
 
     @observable
+    canAddWsets?: boolean = undefined
+
+    @observable
     timeStamps?: TimeStamp[] = undefined
 
     @observable
@@ -58,8 +61,9 @@ export default class WorkoutStore {
     }
 
     @action
-    setNextName(next: string) {
+    setNext(next: string, canAddWsets: boolean) {
         this.next = next
+        this.canAddWsets = canAddWsets;
     }
 
     init(id: number) {
@@ -68,7 +72,7 @@ export default class WorkoutStore {
                 this.setMain(new WorkoutMain(moment(main.wdate).toDate(), main.finished));
                 if (!this.main!!.finished) {
                     this.apiHelper.workoutApi!!.getNextEventNameUsingGET(id).then((next) => {
-                        this.setNextName(next.name)
+                        this.setNext(next.name, next.canAddWsets)
                     })
                 }
             }), this.apiHelper.workoutApi!!.getTimestampsUsingGET(id).then((timeStamps) => {
@@ -87,7 +91,7 @@ export default class WorkoutStore {
             if (next.name == "") {
                 this.main!!.setFinished(true)
             }
-            this.setNextName(next.name)
+            this.setNext(next.name, next.canAddWsets)
             this.apiHelper.workoutApi!!.getTimestampsUsingGET(this.id).then((timeStamps) => {
                 this.setTimeStamps(timeStamps.map((t) => new TimeStamp(t.time, t.type)))
             })
