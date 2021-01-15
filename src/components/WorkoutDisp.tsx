@@ -134,7 +134,7 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                         }
                         {
                             workoutStore.timeStamps!!.map((timeStamp, idx) =>
-                                <div key={idx}>{timeStamp.name} - {timeStamp.time}</div>
+                                <div key={idx}>{timeStamp.name} - {timeStamp.time} {timeStamp.timeDiff !== "" && "(" + timeStamp.timeDiff + ")"}</div>
                             )
                         }
                     </main>

@@ -159,6 +159,12 @@ export interface DTimeStampMain {
      * @type {string}
      * @memberof DTimeStampMain
      */
+    timeDiff?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof DTimeStampMain
+     */
     type: string;
 }
 

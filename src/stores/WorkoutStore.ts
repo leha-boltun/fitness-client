@@ -80,7 +80,8 @@ export default class WorkoutStore {
                     })
                 }
             }), this.apiHelper.workoutApi!!.getTimestampsUsingGET(id).then((timeStamps) => {
-                this.setTimeStamps(timeStamps.map((t) => new TimeStamp(t.time, t.type)))
+                this.setTimeStamps(timeStamps.map((t) => new TimeStamp(t.time, t.type,
+                    t.timeDiff ? moment(t.timeDiff, "HH:mm:ss").format("HH:mm:ss") : "")))
             }), this.apiHelper.workoutApi?.getExersUsingGET(id).then( (exers) => {
                 this.setExers(exers.map(exer => new WorkoutExer(exer.id, exer.name, this.apiHelper)))
             })
@@ -102,7 +103,7 @@ export default class WorkoutStore {
             }
             this.setNext(next.name, next.canAddWsets, next.canSetWeight)
             this.apiHelper.workoutApi!!.getTimestampsUsingGET(this.id).then((timeStamps) => {
-                this.setTimeStamps(timeStamps.map((t) => new TimeStamp(t.time, t.type)))
+                this.setTimeStamps(timeStamps.map((t) => new TimeStamp(t.time, t.type, t.timeDiff || "")))
             })
         })
     }
