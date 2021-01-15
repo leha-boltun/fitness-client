@@ -13,7 +13,10 @@ export default class WorkoutStore {
     next?: string = undefined
 
     @observable
-    canAddWsets?: boolean = undefined
+    canAddWsets: boolean = false
+
+    @observable
+    canSetWeight: boolean = false
 
     @observable
     timeStamps?: TimeStamp[] = undefined
@@ -61,18 +64,19 @@ export default class WorkoutStore {
     }
 
     @action
-    setNext(next: string, canAddWsets: boolean) {
+    setNext(next: string, canAddWsets: boolean, canSetWeight: boolean) {
         this.next = next
-        this.canAddWsets = canAddWsets;
+        this.canAddWsets = canAddWsets
+        this.canSetWeight = canSetWeight
     }
 
     init(id: number) {
         Promise.all([
             this.apiHelper.workoutApi?.getMainUsingGET1(id).then((main) => {
-                this.setMain(new WorkoutMain(moment(main.wdate).toDate(), main.finished));
+                this.setMain(new WorkoutMain(moment(main.wdate).toDate(), main.finished, main.weight));
                 if (!this.main!!.finished) {
                     this.apiHelper.workoutApi!!.getNextEventNameUsingGET(id).then((next) => {
-                        this.setNext(next.name, next.canAddWsets)
+                        this.setNext(next.name, next.canAddWsets, next.canSetWeight)
                     })
                 }
             }), this.apiHelper.workoutApi!!.getTimestampsUsingGET(id).then((timeStamps) => {
@@ -86,12 +90,17 @@ export default class WorkoutStore {
     }
 
     @action.bound
-    doNext() {
-        this.apiHelper.workoutApi!!.processNextEventUsingPOST(this.id).then((next) => {
+    doNext(weight: string = "") {
+        const promise = (this.canSetWeight) ? this.apiHelper.workoutApi!!.processNextEventSetWeightUsingPOST(this.id, weight) :
+            this.apiHelper.workoutApi!!.processNextEventUsingPOST(this.id)
+        promise.then((next) => {
+            if (this.canSetWeight) {
+                this.main!!.setWeight(weight);
+            }
             if (next.name == "") {
                 this.main!!.setFinished(true)
             }
-            this.setNext(next.name, next.canAddWsets)
+            this.setNext(next.name, next.canAddWsets, next.canSetWeight)
             this.apiHelper.workoutApi!!.getTimestampsUsingGET(this.id).then((timeStamps) => {
                 this.setTimeStamps(timeStamps.map((t) => new TimeStamp(t.time, t.type)))
             })

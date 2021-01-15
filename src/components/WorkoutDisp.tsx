@@ -17,6 +17,10 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
         this.props.appStore.workoutStore.init(this.props.id)
     }
 
+    doNext = () => {
+        this.props.appStore.workoutStore.doNext()
+    }
+
     render() {
         const workoutStore = this.props.appStore.workoutStore
         return (
@@ -27,8 +31,36 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                         <h1>Тренировка {moment(workoutStore.main!!.wdate).format("DD.MM.YYYY")}</h1>
                         {
                             !workoutStore.main!!.finished ?
-                                <button onClick={workoutStore.doNext}>{workoutStore.next!!}</button>
+                                (
+                                    workoutStore.canSetWeight ?
+                                        <Formik initialValues={{weight: ""}} validate={
+                                            (values) => {
+                                                const errors: any = {};
+                                                if (!/\d{1,3}(\.\d+)?/.test(values.weight)) {
+                                                    errors.weight = "Вес должен быть числом"
+                                                }
+                                                return errors
+                                            }
+                                        } onSubmit={
+                                            (values) => {
+                                                this.props.appStore.workoutStore.doNext(values.weight)
+                                            }
+                                        }>
+                                            <Form>
+                                                <Field autoComplete="off"
+                                                       className={style.weight} type="weight" name="weight"
+                                                       placeholder="Вес"/>
+                                                <button type={"submit"}>{workoutStore.next!!}</button>
+                                                <ErrorMessage name="weight" component="div"/>
+                                            </Form>
+                                        </Formik> :
+                                    <button onClick={this.doNext}>{workoutStore.next!!}</button>
+                                )
                                 : <div>Тренировка завершена</div>
+                        }
+                        {
+                            workoutStore.main!!.weight &&
+                                <div>Вес {workoutStore.main!!.weight} кг.</div>
                         }
                         {
                             workoutStore.workoutExers!!.map((workoutExer, exerIdx) => (

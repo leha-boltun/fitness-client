@@ -11,6 +11,9 @@ export default class Workout {
     @observable
     finished: boolean
 
+    @observable
+    weight?: string = undefined
+
     constructor(id: number, wdate: Date, finished: boolean, progName: string) {
         this.id = id
         this.wdate = wdate
