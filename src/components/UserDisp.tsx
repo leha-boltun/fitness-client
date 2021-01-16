@@ -2,7 +2,7 @@ import {observer} from "mobx-react";
 import React, {ChangeEvent} from "react";
 import AppStore from "stores/AppStore";
 import moment from "moment";
-import {RouteComponentProps} from "react-router-dom";
+import {Link, RouteComponentProps} from "react-router-dom";
 import Workout from "../stores/Workout";
 import {IReactionDisposer, reaction} from "mobx";
 
@@ -45,6 +45,7 @@ export default class UserDisp extends React.Component<IUserDisp & RouteComponent
             userStore.isInit &&
             <main>
                 <h1>{userStore.main!!.name}</h1>
+                <Link to="/">Все пользователи</Link>
                 <div>
                     <div>
                         <select onChange={this.onProgSelect}>

@@ -25,7 +25,8 @@ export default class WorkoutStore {
     workoutExers?: WorkoutExer[] = undefined
 
     @observable
-    private id: number = -1
+    id: number = -1
+
     private apiHelper: ApiHelper;
 
     constructor(apiHelper: ApiHelper) {
@@ -73,7 +74,7 @@ export default class WorkoutStore {
     init(id: number) {
         Promise.all([
             this.apiHelper.workoutApi?.getMainUsingGET1(id).then((main) => {
-                this.setMain(new WorkoutMain(moment(main.wdate).toDate(), main.finished, main.weight));
+                this.setMain(new WorkoutMain(main.wuserId, moment(main.wdate).toDate(), main.finished, main.weight));
                 if (!this.main!!.finished) {
                     this.apiHelper.workoutApi!!.getNextEventNameUsingGET(id).then((next) => {
                         this.setNext(next.name, next.canAddWsets, next.canSetWeight)

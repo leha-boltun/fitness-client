@@ -1,6 +1,6 @@
 import {observer} from "mobx-react";
 import React from "react";
-import {RouteComponentProps} from "react-router-dom";
+import {Link, RouteComponentProps} from "react-router-dom";
 import AppStore from "../stores/AppStore";
 import moment from "moment";
 import {ErrorMessage, Field, Form, Formik} from "formik";
@@ -29,6 +29,7 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                     workoutStore.isInit &&
                     <main>
                         <h1>Тренировка {moment(workoutStore.main!!.wdate).format("DD.MM.YYYY")}</h1>
+                        <Link to={"/user/" + workoutStore.main!!.wuserId}>Другие тренировки</Link>
                         {
                             !workoutStore.main!!.finished ?
                                 (

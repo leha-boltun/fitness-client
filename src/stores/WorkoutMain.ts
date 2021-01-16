@@ -2,6 +2,9 @@ import {action, makeObservable, observable} from "mobx";
 
 export default class WorkoutMain {
     @observable
+    wuserId: number
+
+    @observable
     wdate: Date
 
     @observable
@@ -20,7 +23,8 @@ export default class WorkoutMain {
         this.weight = weight
     }
 
-    constructor(wdate: Date, finished: boolean, weight?: string) {
+    constructor(wuserId: number, wdate: Date, finished: boolean, weight?: string) {
+        this.wuserId = wuserId
         this.wdate = wdate
         this.finished = finished
         this.weight = weight
