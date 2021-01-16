@@ -37,14 +37,14 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                                         <Formik initialValues={{weight: ""}} validate={
                                             (values) => {
                                                 const errors: any = {};
-                                                if (!/\d{1,3}(\.\d+)?/.test(values.weight)) {
+                                                if (!/^\d{1,3}(?:[.,]\d+)?$/.test(values.weight)) {
                                                     errors.weight = "Вес должен быть числом"
                                                 }
                                                 return errors
                                             }
                                         } onSubmit={
                                             (values) => {
-                                                this.props.appStore.workoutStore.doNext(values.weight)
+                                                this.props.appStore.workoutStore.doNext(values.weight.replace(',', '.'))
                                             }
                                         }>
                                             <Form>
