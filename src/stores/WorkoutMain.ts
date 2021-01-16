@@ -13,6 +13,9 @@ export default class WorkoutMain {
     @observable
     weight?: string = undefined
 
+    @observable
+    totalTime?: string = undefined
+
     @action
     setFinished(finished: boolean) {
         this.finished = finished
@@ -23,11 +26,17 @@ export default class WorkoutMain {
         this.weight = weight
     }
 
-    constructor(wuserId: number, wdate: Date, finished: boolean, weight?: string) {
+    @action
+    setTotalTime(totalTime: string) {
+        this.totalTime = totalTime
+    }
+
+    constructor(wuserId: number, wdate: Date, finished: boolean, weight?: string, totalTime?: string) {
         this.wuserId = wuserId
         this.wdate = wdate
         this.finished = finished
         this.weight = weight
+        this.totalTime = totalTime
         makeObservable(this);
     }
 }

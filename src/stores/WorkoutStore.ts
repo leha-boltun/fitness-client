@@ -74,7 +74,7 @@ export default class WorkoutStore {
     init(id: number) {
         Promise.all([
             this.apiHelper.workoutApi?.getMainUsingGET1(id).then((main) => {
-                this.setMain(new WorkoutMain(main.wuserId, moment(main.wdate).toDate(), main.finished, main.weight));
+                this.setMain(new WorkoutMain(main.wuserId, moment(main.wdate).toDate(), main.finished, main.weight, main.totalTime));
                 if (!this.main!!.finished) {
                     this.apiHelper.workoutApi!!.getNextEventNameUsingGET(id).then((next) => {
                         this.setNext(next.name, next.canAddWsets, next.canSetWeight)
@@ -101,6 +101,9 @@ export default class WorkoutStore {
             }
             if (next.name == "") {
                 this.main!!.setFinished(true)
+                this.apiHelper.workoutApi?.getTotalTimeUsingGET(this.id).then(
+                    (totalTime) => this.main!!.setTotalTime(totalTime)
+                );
             }
             this.setNext(next.name, next.canAddWsets, next.canSetWeight)
             this.apiHelper.workoutApi!!.getTimestampsUsingGET(this.id).then((timeStamps) => {

@@ -56,7 +56,7 @@ export default class UserStore {
         }),
         this.apiHelper.userApi!!.getWorkoutsUsingGET(id).then((workouts) => {
             this.setWorkouts(workouts.map( (w) =>
-                new Workout(w.id, moment(w.wdate, false).toDate(), w.finished, w.programName) ))
+                new Workout(w.id, moment(w.wdate, false).toDate(), w.finished, w.programName, w.totalTime) ))
         })]).then(() => {this.setId(id)})
     }
 
@@ -64,6 +64,6 @@ export default class UserStore {
     addWorkout(progId: number, onAdd: (workout: Workout) => any) {
         this.apiHelper.workoutApi!!.createUsingPOST(progId, this.id)
             .then( (w) =>
-                onAdd(new Workout(w.id, moment(w.wdate, false).toDate(), w.finished, w.programName)) )
+                onAdd(new Workout(w.id, moment(w.wdate, false).toDate(), w.finished, w.programName, w.totalTime)) )
     }
 }

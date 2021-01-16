@@ -67,6 +67,7 @@ export default class UserDisp extends React.Component<IUserDisp & RouteComponent
                                     }>Тренировка {
                                         moment(workout.wdate).format("DD.MM.YYYY")} {" "}
                                         {workout.progName} {workout.finished && " - Завершена"}
+                                        {workout.totalTime && " " + workout.totalTime}
                                     </div>
                                 )
                         )

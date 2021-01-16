@@ -57,7 +57,7 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                                         </Formik> :
                                     <button onClick={this.doNext}>{workoutStore.next!!}</button>
                                 )
-                                : <div>Тренировка завершена</div>
+                                : <div>Тренировка завершена, время {workoutStore.main!!.totalTime}</div>
                         }
                         {
                             workoutStore.main!!.weight &&
