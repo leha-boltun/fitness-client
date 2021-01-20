@@ -87,13 +87,19 @@ export interface DExer {
      * @type {number}
      * @memberof DExer
      */
-    id: number;
+    id?: number;
     /**
      * 
      * @type {string}
      * @memberof DExer
      */
     name: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof DExer
+     */
+    prevId?: number;
 }
 
 /**
@@ -1455,12 +1461,17 @@ export const WorkoutControllerApiFetchParamCreator = function (configuration?: C
         /**
          * 
          * @summary create
+         * @param {number} prevId prevId
          * @param {number} progId progId
          * @param {number} userId userId
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createUsingPOST(progId: number, userId: number, options: any = {}): FetchArgs {
+        createUsingPOST(prevId: number, progId: number, userId: number, options: any = {}): FetchArgs {
+            // verify required parameter 'prevId' is not null or undefined
+            if (prevId === null || prevId === undefined) {
+                throw new RequiredError('prevId','Required parameter prevId was null or undefined when calling createUsingPOST.');
+            }
             // verify required parameter 'progId' is not null or undefined
             if (progId === null || progId === undefined) {
                 throw new RequiredError('progId','Required parameter progId was null or undefined when calling createUsingPOST.');
@@ -1469,7 +1480,8 @@ export const WorkoutControllerApiFetchParamCreator = function (configuration?: C
             if (userId === null || userId === undefined) {
                 throw new RequiredError('userId','Required parameter userId was null or undefined when calling createUsingPOST.');
             }
-            const localVarPath = `/pi/workout/{userId}/{progId}`
+            const localVarPath = `/pi/workout/{userId}/{progId}/{prevId}`
+                .replace(`{${"prevId"}}`, encodeURIComponent(String(prevId)))
                 .replace(`{${"progId"}}`, encodeURIComponent(String(progId)))
                 .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
             const localVarUrlObj = url.parse(localVarPath, true);
@@ -1759,13 +1771,14 @@ export const WorkoutControllerApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary create
+         * @param {number} prevId prevId
          * @param {number} progId progId
          * @param {number} userId userId
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createUsingPOST(progId: number, userId: number, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<DWorkout> {
-            const localVarFetchArgs = WorkoutControllerApiFetchParamCreator(configuration).createUsingPOST(progId, userId, options);
+        createUsingPOST(prevId: number, progId: number, userId: number, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<DWorkout> {
+            const localVarFetchArgs = WorkoutControllerApiFetchParamCreator(configuration).createUsingPOST(prevId, progId, userId, options);
             return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
                 return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
                     if (response.status >= 200 && response.status < 300) {
@@ -1922,13 +1935,14 @@ export const WorkoutControllerApiFactory = function (configuration?: Configurati
         /**
          * 
          * @summary create
+         * @param {number} prevId prevId
          * @param {number} progId progId
          * @param {number} userId userId
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createUsingPOST(progId: number, userId: number, options?: any) {
-            return WorkoutControllerApiFp(configuration).createUsingPOST(progId, userId, options)(fetch, basePath);
+        createUsingPOST(prevId: number, progId: number, userId: number, options?: any) {
+            return WorkoutControllerApiFp(configuration).createUsingPOST(prevId, progId, userId, options)(fetch, basePath);
         },
         /**
          * 
@@ -2014,14 +2028,15 @@ export class WorkoutControllerApi extends BaseAPI {
     /**
      * 
      * @summary create
+     * @param {number} prevId prevId
      * @param {number} progId progId
      * @param {number} userId userId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof WorkoutControllerApi
      */
-    public createUsingPOST(progId: number, userId: number, options?: any) {
-        return WorkoutControllerApiFp(this.configuration).createUsingPOST(progId, userId, options)(this.fetch, this.basePath);
+    public createUsingPOST(prevId: number, progId: number, userId: number, options?: any) {
+        return WorkoutControllerApiFp(this.configuration).createUsingPOST(prevId, progId, userId, options)(this.fetch, this.basePath);
     }
 
     /**

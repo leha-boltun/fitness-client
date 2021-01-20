@@ -61,8 +61,8 @@ export default class UserStore {
     }
 
     @action.bound
-    addWorkout(progId: number, onAdd: (workout: Workout) => any) {
-        this.apiHelper.workoutApi!!.createUsingPOST(progId, this.id)
+    addWorkout(progId: number, prevProgId: number, onAdd: (workout: Workout) => any) {
+        this.apiHelper.workoutApi!!.createUsingPOST(prevProgId, progId, this.id)
             .then( (w) =>
                 onAdd(new Workout(w.id, moment(w.wdate, false).toDate(), w.finished, w.programName, w.totalTime)) )
     }

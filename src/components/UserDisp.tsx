@@ -12,8 +12,8 @@ interface IUserDisp {
 }
 
 @observer
-export default class UserDisp extends React.Component<IUserDisp & RouteComponentProps, { curProgId: number }> {
-    readonly state = {curProgId: -1}
+export default class UserDisp extends React.Component<IUserDisp & RouteComponentProps> {
+    readonly state = {curProgId: -1, prevProgId: -1}
 
     private setIdDisp?: IReactionDisposer
 
@@ -26,7 +26,7 @@ export default class UserDisp extends React.Component<IUserDisp & RouteComponent
     }
 
     addWorkout = () => {
-        this.props.appStore.userStore.addWorkout(this.state.curProgId, (workout) => {
+        this.props.appStore.userStore.addWorkout(this.state.curProgId, this.state.prevProgId, (workout) => {
             this.props.history.push("/workout/" + workout.id)
         })
     }
@@ -36,7 +36,13 @@ export default class UserDisp extends React.Component<IUserDisp & RouteComponent
     }
 
     onProgSelect = (e: ChangeEvent<HTMLSelectElement>) => {
-        this.state.curProgId = +e.target!!.options[e.target!!.options.selectedIndex].dataset['id']!!;
+        const value = +e.target!!.value!!
+        this.setState({prevProgId: value, curProgId: value});
+    }
+
+    onPrevProgSelect = (e: ChangeEvent<HTMLSelectElement>) => {
+        const value = +e.target!!.value!!
+        this.setState({prevProgId: value});
     }
 
     render() {
@@ -48,13 +54,22 @@ export default class UserDisp extends React.Component<IUserDisp & RouteComponent
                 <Link to="/">Все пользователи</Link>
                 <div>
                     <div>
-                        <select onChange={this.onProgSelect}>
+                        <select onChange={this.onProgSelect} value={this.state.curProgId}>
                             {
                                 this.props.appStore.progsStore.progs!!.map(
                                     (prog, idx) =>
-                                        <option data-id={prog.id} key={idx}>{prog.name}</option>
+                                        <option key={idx} value={prog.id}>{prog.name}</option>
                                 )
                             }
+                        </select>
+                        <select onChange={this.onPrevProgSelect} value={this.state.prevProgId}>
+                            {
+                                this.props.appStore.progsStore.progs!!.map(
+                                    (prog, idx) =>
+                                        <option key={idx} value={prog.id}>{prog.name}</option>
+                                )
+                            }
+                            <option data-id={-1} key={-1}>Нет</option>
                         </select>
                         <button onClick={this.addWorkout}>Новая тренировка</button>
                     </div>

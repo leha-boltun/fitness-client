@@ -13,6 +13,10 @@ interface IWorkoutDisp {
 
 @observer
 export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteComponentProps> {
+    readonly state = {
+        firstFields: [] as HTMLInputElement[]
+    }
+
     componentDidMount() {
         this.props.appStore.workoutStore.init(this.props.id)
     }
@@ -29,7 +33,7 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                     workoutStore.isInit &&
                     <main>
                         <h1>Тренировка {moment(workoutStore.main!!.wdate).format("DD.MM.YYYY")}</h1>
-                        <Link to={"/user/" + workoutStore.main!!.wuserId}>Другие тренировки</Link>
+                        <div><Link to={"/user/" + workoutStore.main!!.wuserId}>Другие тренировки</Link></div>
                         {
                             !workoutStore.main!!.finished ?
                                 (
@@ -55,19 +59,41 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                                                 <ErrorMessage name="weight" component="div"/>
                                             </Form>
                                         </Formik> :
-                                    <button onClick={this.doNext}>{workoutStore.next!!}</button>
+                                        <button onClick={this.doNext}>{workoutStore.next!!}</button>
                                 )
                                 : <div>Тренировка завершена, время {workoutStore.main!!.totalTime}</div>
                         }
                         {
                             workoutStore.main!!.weight &&
-                                <div>Вес {workoutStore.main!!.weight} кг.</div>
+                            <div>Вес {workoutStore.main!!.weight} кг.</div>
                         }
                         {
                             workoutStore.workoutExers!!.map((workoutExer, exerIdx) => (
                                 <div key={exerIdx}>
                                     <div>{workoutExer.name}</div>
-                                    <Formik
+
+                                    {workoutExer.hasPrev() &&
+                                    <table className={style.weightTable}>
+                                        <tbody>
+                                        <tr>
+                                            {
+                                                workoutExer.prevWsets.map((wset, idx) => (
+                                                    <td key={idx}>{wset.weight}</td>
+                                                ))
+                                            }
+                                        </tr>
+                                        <tr>
+                                            {
+                                                workoutExer.prevWsets.map((wset, idx) => (
+                                                    <td key={idx}>{wset.count}</td>
+                                                ))
+                                            }
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    }
+
+                                    {workoutExer.hasCur() && <Formik
                                         initialValues={{weight: '', count: ''}}
                                         validate={values => {
                                             const errors: any = {};
@@ -83,6 +109,7 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                                             workoutExer.addWset(values.weight, values.count, () => {
                                                 setSubmitting(false)
                                                 resetForm()
+                                                this.state.firstFields[exerIdx]!!.focus()
                                             })
                                         }}
                                     >
@@ -97,7 +124,9 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                                                     }
                                                     {(workoutStore.canAddWsets &&
                                                         <td className={style.specTd}>
-                                                            <Field autoComplete="off"
+                                                            <Field autoComplete="off" innerRef={
+                                                                (el: HTMLInputElement) => this.state.firstFields[exerIdx] = el
+                                                            }
                                                                    className={style.weight} type="weight" name="weight"
                                                                    placeholder="Вес"/>
                                                             <ErrorMessage name="weight" component="span"/>
@@ -129,13 +158,14 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                                                 </tbody>
                                             </table>
                                         </Form>
-                                    </Formik>
+                                    </Formik>}
                                 </div>
                             ))
                         }
                         {
                             workoutStore.timeStamps!!.map((timeStamp, idx) =>
-                                <div key={idx}>{timeStamp.name} - {timeStamp.time} {timeStamp.timeDiff !== "" && "(" + timeStamp.timeDiff + ")"}</div>
+                                <div
+                                    key={idx}>{timeStamp.name} - {timeStamp.time} {timeStamp.timeDiff !== "" && "(" + timeStamp.timeDiff + ")"}</div>
                             )
                         }
                     </main>
