@@ -1507,6 +1507,50 @@ export const WorkoutControllerApiFetchParamCreator = function (configuration?: C
         },
         /**
          * 
+         * @summary editWeight
+         * @param {number} id id
+         * @param {string} weight weight
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        editWeightUsingPATCH(id: number, weight: string, options: any = {}): FetchArgs {
+            // verify required parameter 'id' is not null or undefined
+            if (id === null || id === undefined) {
+                throw new RequiredError('id','Required parameter id was null or undefined when calling editWeightUsingPATCH.');
+            }
+            // verify required parameter 'weight' is not null or undefined
+            if (weight === null || weight === undefined) {
+                throw new RequiredError('weight','Required parameter weight was null or undefined when calling editWeightUsingPATCH.');
+            }
+            const localVarPath = `/pi/workout/{id}/weight`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarUrlObj = url.parse(localVarPath, true);
+            const localVarRequestOptions = Object.assign({ method: 'PATCH' }, options);
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication basicAuth required
+            // http basic authentication required
+            if (configuration && (configuration.username || configuration.password)) {
+                localVarHeaderParameter["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+            }
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = Object.assign({}, localVarHeaderParameter, options.headers);
+            const needsSerialization = (<any>"string" !== "string") || localVarRequestOptions.headers['Content-Type'] === 'application/json';
+            localVarRequestOptions.body =  needsSerialization ? JSON.stringify(weight || {}) : (weight || "");
+
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary getExers
          * @param {number} id id
          * @param {*} [options] Override http request option.
@@ -1791,6 +1835,26 @@ export const WorkoutControllerApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary editWeight
+         * @param {number} id id
+         * @param {string} weight weight
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        editWeightUsingPATCH(id: number, weight: string, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<Response> {
+            const localVarFetchArgs = WorkoutControllerApiFetchParamCreator(configuration).editWeightUsingPATCH(id, weight, options);
+            return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
+                return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
+                    if (response.status >= 200 && response.status < 300) {
+                        return response;
+                    } else {
+                        throw response;
+                    }
+                });
+            };
+        },
+        /**
+         * 
          * @summary getExers
          * @param {number} id id
          * @param {*} [options] Override http request option.
@@ -1946,6 +2010,17 @@ export const WorkoutControllerApiFactory = function (configuration?: Configurati
         },
         /**
          * 
+         * @summary editWeight
+         * @param {number} id id
+         * @param {string} weight weight
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        editWeightUsingPATCH(id: number, weight: string, options?: any) {
+            return WorkoutControllerApiFp(configuration).editWeightUsingPATCH(id, weight, options)(fetch, basePath);
+        },
+        /**
+         * 
          * @summary getExers
          * @param {number} id id
          * @param {*} [options] Override http request option.
@@ -2037,6 +2112,19 @@ export class WorkoutControllerApi extends BaseAPI {
      */
     public createUsingPOST(prevId: number, progId: number, userId: number, options?: any) {
         return WorkoutControllerApiFp(this.configuration).createUsingPOST(prevId, progId, userId, options)(this.fetch, this.basePath);
+    }
+
+    /**
+     * 
+     * @summary editWeight
+     * @param {number} id id
+     * @param {string} weight weight
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WorkoutControllerApi
+     */
+    public editWeightUsingPATCH(id: number, weight: string, options?: any) {
+        return WorkoutControllerApiFp(this.configuration).editWeightUsingPATCH(id, weight, options)(this.fetch, this.basePath);
     }
 
     /**

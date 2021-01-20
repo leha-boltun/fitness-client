@@ -17,6 +17,10 @@ module.exports = {
             path.resolve(__dirname + '/src'),
             path.resolve(__dirname + '/node_modules')
         ],
+        alias: {
+            'long-press-event':
+                path.resolve(__dirname + '/node_modules/long-press-event/src/long-press-event.js')
+        },
         extensions: ['.js', '.ts', '.tsx']
     },
     module: {

@@ -18,6 +18,7 @@
     "file-loader": "^6.2.0",
     "formik": "^2.2.6",
     "jest": "^26.6.3",
+    "long-press-event": "^2.4.2",
     "mobx": "6.0.4",
     "mobx-react": "^7.0.5",
     "moment": "^2.29.1",

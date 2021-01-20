@@ -27,11 +27,27 @@ export default class WorkoutStore {
     @observable
     id: number = -1
 
+    @observable
+    editingWeight?: boolean = false
+
     private apiHelper: ApiHelper;
 
     constructor(apiHelper: ApiHelper) {
         this.apiHelper = apiHelper
         makeObservable(this)
+    }
+
+    @action
+    setEditingWeight(editing: boolean) {
+        this.editingWeight = editing
+    }
+
+    @action
+    setWeight(weight: string) {
+        return this.apiHelper.workoutApi!!.editWeightUsingPATCH(this.id, weight).then(() => {
+            this.main!!.setWeight(weight)
+            this.setEditingWeight(false)
+        })
     }
 
     @computed
@@ -74,7 +90,11 @@ export default class WorkoutStore {
     init(id: number) {
         Promise.all([
             this.apiHelper.workoutApi?.getMainUsingGET1(id).then((main) => {
-                this.setMain(new WorkoutMain(main.wuserId, moment(main.wdate).toDate(), main.finished, main.weight, main.totalTime));
+                this.setMain(new WorkoutMain(
+                    main.wuserId,
+                    moment(main.wdate).toDate(),
+                    main.finished, main.weight, main.totalTime
+                ));
                 if (!this.main!!.finished) {
                     this.apiHelper.workoutApi!!.getNextEventNameUsingGET(id).then((next) => {
                         this.setNext(next.name, next.canAddWsets, next.canSetWeight)

@@ -5,6 +5,7 @@ import AppStore from "../stores/AppStore";
 import moment from "moment";
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import style from 'style.styl'
+import 'long-press-event'
 
 interface IWorkoutDisp {
     id: number
@@ -14,7 +15,8 @@ interface IWorkoutDisp {
 @observer
 export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteComponentProps> {
     readonly state = {
-        firstFields: [] as HTMLInputElement[]
+        firstFields: [] as HTMLInputElement[],
+        weightDiv: null as HTMLDivElement | null
     }
 
     componentDidMount() {
@@ -64,8 +66,37 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                                 : <div>Тренировка завершена, время {workoutStore.main!!.totalTime}</div>
                         }
                         {
-                            workoutStore.main!!.weight &&
-                            <div>Вес {workoutStore.main!!.weight} кг.</div>
+                            workoutStore.editingWeight ?
+                                (
+                                    <Formik initialValues={{weight: ""}} validate={
+                                        (values) => {
+                                            const errors: any = {};
+                                            if (!/^\d{1,3}(?:[.,]\d+)?$/.test(values.weight)) {
+                                                errors.weight = "Вес должен быть числом"
+                                            }
+                                            return errors
+                                        }
+                                    } onSubmit={
+                                        (values) => {
+                                            this.props.appStore.workoutStore.setWeight(values.weight.replace(',', '.'))
+                                        }
+                                    }>
+                                        <Form>
+                                            <Field autoComplete="off"
+                                                   className={style.weight} type="weight" name="weight"
+                                                   placeholder="Вес"/>
+                                            <button type={"submit"}>ОК</button>
+                                            <ErrorMessage name="weight" component="div"/>
+                                        </Form>
+                                    </Formik>
+                                ) :
+                                (workoutStore.main!!.weight && <div ref={
+                                    elem => elem && elem!!
+                                    .addEventListener('long-press', (e) => {
+                                        e.preventDefault();
+                                        this.props.appStore.workoutStore.setEditingWeight(true)
+                                    })
+                                } data-long-press-delay="200">Вес {workoutStore.main!!.weight} кг.</div>)
                         }
                         {
                             workoutStore.workoutExers!!.map((workoutExer, exerIdx) => (
