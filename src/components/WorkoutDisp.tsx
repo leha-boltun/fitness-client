@@ -12,11 +12,54 @@ interface IWorkoutDisp {
     appStore: AppStore
 }
 
+class TdInputWeight extends React.Component<{ canAddWsets: boolean, innerRef: any }, any> {
+    render() {
+        return (
+            <td>
+                {(this.props.canAddWsets &&
+                    <div className={style.specTd}>
+                        <Field autoComplete="off" innerRef={this.props.innerRef}
+                               className={style.weight} type="weight" name="weight"
+                               placeholder="Вес"/>
+                        <ErrorMessage name="weight" component="span"/>&nbsp;
+                        <button type="submit">
+                            +
+                        </button>
+                    </div>
+                )}
+            </td>
+        )
+    }
+}
+
+class TdInputCount extends React.Component<{ canAddWsets: boolean, onClose: (() => void) | null }, any> {
+    render() {
+        return (
+            <td>
+                {(this.props.canAddWsets &&
+                    <div className={style.specTd}>
+                        <Field autoComplete="off" className={style.count}
+                               type="count" name="count"
+                               placeholder="Число"/>
+                        <ErrorMessage name="count" component="span"/>&nbsp;
+                        {
+                            this.props.onClose && <button onClick={this.props.onClose}>
+                            x
+                            </button>
+                        }
+                    </div>
+                )}
+            </td>
+        )
+    }
+}
+
 @observer
 export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteComponentProps> {
     readonly state = {
         firstFields: [] as HTMLInputElement[],
-        weightDiv: null as HTMLDivElement | null
+        weightDiv: null as HTMLDivElement | null,
+        weightForms: [] as any[]
     }
 
     componentDidMount() {
@@ -25,6 +68,11 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
 
     doNext = () => {
         this.props.appStore.workoutStore.doNext()
+    }
+
+    doClose = (idx: number) => {
+        this.props.appStore.workoutStore.workoutExers!![idx].setEditableId(-1)
+        this.state.weightForms[idx].resetForm()
     }
 
     render() {
@@ -92,11 +140,10 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                                 ) :
                                 (workoutStore.main!!.weight && <div ref={
                                     elem => elem && elem!!
-                                    .addEventListener('long-press', (e) => {
-                                        e.preventDefault();
-                                        this.props.appStore.workoutStore.setEditingWeight(true)
-                                    })
-                                } data-long-press-delay="200">Вес {workoutStore.main!!.weight} кг.</div>)
+                                        .addEventListener('long-press', () => {
+                                            this.props.appStore.workoutStore.setEditingWeight(true)
+                                        })
+                                } data-long-press-delay="300">Вес {workoutStore.main!!.weight} кг.</div>)
                         }
                         {
                             workoutStore.workoutExers!!.map((workoutExer, exerIdx) => (
@@ -123,8 +170,8 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                                         </tbody>
                                     </table>
                                     }
-
                                     {workoutExer.hasCur() && <Formik
+                                        innerRef={(el: any) => {this.state.weightForms[exerIdx] = el}}
                                         initialValues={{weight: '', count: ''}}
                                         validate={values => {
                                             const errors: any = {};
@@ -150,41 +197,46 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                                                 <tr>
                                                     {
                                                         workoutExer.wsets.map((wset, idx) => (
-                                                            <td key={idx}>{wset.weight}</td>
+                                                            (wset.id === workoutExer.editableId) ?
+                                                            <TdInputWeight key={idx}
+                                                                           canAddWsets={workoutStore.canAddWsets} innerRef={
+                                                                (el: HTMLInputElement) => this.state.firstFields[exerIdx] = el
+                                                            }/> :
+                                                            <td ref={
+                                                                elem => elem && elem!!
+                                                                    .addEventListener('long-press', () => {
+                                                                        workoutStore.canAddWsets &&
+                                                                        workoutExer.setEditableId(wset.id)
+                                                                    })
+                                                            } data-long-press-delay="300" key={idx}>{wset.weight}</td>
                                                         ))
                                                     }
-                                                    {(workoutStore.canAddWsets &&
-                                                        <td className={style.specTd}>
-                                                            <Field autoComplete="off" innerRef={
-                                                                (el: HTMLInputElement) => this.state.firstFields[exerIdx] = el
-                                                            }
-                                                                   className={style.weight} type="weight" name="weight"
-                                                                   placeholder="Вес"/>
-                                                            <ErrorMessage name="weight" component="span"/>
-                                                        </td>
-                                                    )}
-                                                    {(workoutStore.canAddWsets &&
-                                                        <td className={style.specTd} rowSpan={2}>
-                                                            <button type="submit">
-                                                                +
-                                                            </button>
-                                                        </td>
-                                                    )}
+                                                    {
+                                                        workoutExer.editableId == -1 && workoutStore.canAddWsets &&
+                                                        <TdInputWeight canAddWsets={workoutStore.canAddWsets} innerRef={
+                                                            (el: HTMLInputElement) => this.state.firstFields[exerIdx] = el
+                                                        }/>
+                                                    }
                                                 </tr>
                                                 <tr>
                                                     {
                                                         workoutExer.wsets.map((wset, idx) => (
-                                                            <td key={idx}>{wset.count}</td>
+                                                            (wset.id === workoutExer.editableId) ?
+                                                            <TdInputCount key={idx} canAddWsets={workoutStore.canAddWsets}
+                                                                          onClose={this.doClose.bind(this, exerIdx)}/> :
+                                                            <td ref={
+                                                                elem => elem && elem!!
+                                                                    .addEventListener('long-press', () => {
+                                                                        workoutStore.canAddWsets &&
+                                                                        workoutExer.setEditableId(wset.id)
+                                                                    })
+                                                            } data-long-press-delay="300" key={idx}>{wset.count}</td>
                                                         ))
                                                     }
-                                                    {(workoutStore.canAddWsets &&
-                                                        <td className={style.specTd}>
-                                                            <Field autoComplete="off" className={style.count}
-                                                                   type="count" name="count"
-                                                                   placeholder="Число"/>
-                                                            <ErrorMessage name="count" component="span"/>
-                                                        </td>
-                                                    )}
+                                                    {
+                                                        workoutExer.editableId == -1 && workoutStore.canAddWsets &&
+                                                        <TdInputCount canAddWsets={workoutStore.canAddWsets} onClose={null}/>
+                                                    }
                                                 </tr>
                                                 </tbody>
                                             </table>

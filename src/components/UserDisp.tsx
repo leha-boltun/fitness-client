@@ -20,7 +20,7 @@ export default class UserDisp extends React.Component<IUserDisp & RouteComponent
     componentDidMount() {
         this.props.appStore.progsStore.fetchProgs();
         this.setIdDisp = reaction(() => this.props.appStore.progsStore.progs, (progs) => {
-            this.state.curProgId = progs!![0].id
+            this.state.prevProgId = this.state.curProgId = progs!![0].id
         })
         this.props.appStore.userStore.init(this.props.id)
     }
@@ -69,7 +69,7 @@ export default class UserDisp extends React.Component<IUserDisp & RouteComponent
                                         <option key={idx} value={prog.id}>{prog.name}</option>
                                 )
                             }
-                            <option data-id={-1} key={-1}>Нет</option>
+                            <option data-id={-1} key={-1} value={-1}>Нет</option>
                         </select>
                         <button onClick={this.addWorkout}>Новая тренировка</button>
                     </div>

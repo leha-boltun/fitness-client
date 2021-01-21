@@ -58,6 +58,7 @@ export default class WorkoutStore {
     @action
     reset() {
         this.id = -1
+        this.editingWeight = false
     }
 
     @action
