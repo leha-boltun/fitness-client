@@ -3,7 +3,6 @@ import React, {ChangeEvent} from "react";
 import AppStore from "stores/AppStore";
 import moment from "moment";
 import {Link, RouteComponentProps} from "react-router-dom";
-import {IReactionDisposer, reaction} from "mobx";
 import style from 'style.styl'
 
 interface IUserDisp {
@@ -15,14 +14,13 @@ interface IUserDisp {
 export default class UserDisp extends React.Component<IUserDisp & RouteComponentProps> {
     readonly state = {curProgId: -1, prevProgId: -1}
 
-    private setIdDisp?: IReactionDisposer
-
     componentDidMount() {
-        this.props.appStore.progsStore.fetchProgs();
-        this.setIdDisp = reaction(() => this.props.appStore.progsStore.progs, (progs) => {
-            this.state.prevProgId = this.state.curProgId = progs!![0].id
-        })
-        this.props.appStore.userStore.init(this.props.id)
+        this.props.appStore.userStore.init(this.props.id).then(
+            () => {
+                const progs = this.props.appStore.userStore.progs!!
+                this.setState({curProgId: progs[0].id, prevProgId: progs[0].id})
+            }
+        )
     }
 
     addWorkout = () => {
@@ -54,7 +52,7 @@ export default class UserDisp extends React.Component<IUserDisp & RouteComponent
                             <label>Программа</label>
                             <select onChange={this.onProgSelect} value={this.state.curProgId}>
                                 {
-                                    this.props.appStore.progsStore.progs!!.map(
+                                    this.props.appStore.userStore.progs!!.map(
                                         (prog, idx) =>
                                             <option key={idx} value={prog.id}>{prog.name}</option>
                                     )
@@ -65,7 +63,7 @@ export default class UserDisp extends React.Component<IUserDisp & RouteComponent
                             <label>Пред.&nbsp;программа</label>
                             <select onChange={this.onPrevProgSelect} value={this.state.prevProgId}>
                                 {
-                                    this.props.appStore.progsStore.progs!!.map(
+                                    this.props.appStore.userStore.progs!!.map(
                                         (prog, idx) =>
                                             <option key={idx} value={prog.id}>{prog.name}</option>
                                     )
@@ -96,6 +94,5 @@ export default class UserDisp extends React.Component<IUserDisp & RouteComponent
 
     componentWillUnmount() {
         this.props.appStore.userStore.reset()
-        this.setIdDisp && this.setIdDisp()
     }
 }
