@@ -72,6 +72,10 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
         this.weightForms[idx].resetForm()
     }
 
+    doCloseWeight = () => {
+        this.props.appStore.workoutStore.editingWeight = false
+    }
+
     render() {
         const workoutStore = this.props.appStore.workoutStore
         return (
@@ -98,7 +102,7 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                                                 this.props.appStore.workoutStore.doNext(values.weight.replace(',', '.'))
                                             }
                                         }>
-                                            <Form>
+                                            <Form className={style.weightForm}>
                                                 <Field autoComplete="off"
                                                        className={style.weight} type="weight" name="weight"
                                                        placeholder="Вес"/>
@@ -126,11 +130,12 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                                             this.props.appStore.workoutStore.setWeight(values.weight.replace(',', '.'))
                                         }
                                     }>
-                                        <Form>
+                                        <Form className={style.weightForm}>
                                             <Field autoComplete="off"
                                                    className={style.weight} type="weight" name="weight"
                                                    placeholder="Вес"/>
                                             <button type={"submit"}>ОК</button>
+                                            <button onClick={this.doCloseWeight}>Отмена</button>
                                             <ErrorMessage name="weight" component="div"/>
                                         </Form>
                                     </Formik>
