@@ -3,7 +3,6 @@ import React, {ChangeEvent} from "react";
 import AppStore from "stores/AppStore";
 import moment from "moment";
 import {Link, RouteComponentProps} from "react-router-dom";
-import Workout from "../stores/Workout";
 import {IReactionDisposer, reaction} from "mobx";
 import style from 'style.styl'
 
@@ -30,10 +29,6 @@ export default class UserDisp extends React.Component<IUserDisp & RouteComponent
         this.props.appStore.userStore.addWorkout(this.state.curProgId, this.state.prevProgId, (workout) => {
             this.props.history.push("/workout/" + workout.id)
         })
-    }
-
-    openWorkout = (workout: Workout) => {
-        this.props.history.push("/workout/" + workout.id)
     }
 
     onProgSelect = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -84,12 +79,12 @@ export default class UserDisp extends React.Component<IUserDisp & RouteComponent
                         userStore.workouts!!.map(
                             (workout, idx) =>
                                 (
-                                    <div key={idx} onClick={
-                                        this.openWorkout.bind(this, workout)
-                                    }>Тренировка {
-                                        moment(workout.wdate).format("DD.MM.YYYY")} {" "}
-                                        {workout.progName} {workout.finished && " - Завершена"}
-                                        {workout.totalTime && " " + workout.totalTime}
+                                    <div key={idx}>
+                                        <Link to={"/workout/" + workout.id}>Тренировка {
+                                            moment(workout.wdate).format("DD.MM.YYYY")} {" "}
+                                            {workout.progName} {workout.finished && " - Завершена"}
+                                            {workout.totalTime && " " + workout.totalTime}
+                                        </Link>
                                     </div>
                                 )
                         )

@@ -1,8 +1,7 @@
 import {observer} from "mobx-react";
 import * as React from "react";
 import AppStore from "stores/AppStore";
-import {RouteComponentProps} from "react-router-dom";
-import UserName from "stores/UserName";
+import {Link, RouteComponentProps} from "react-router-dom";
 
 interface IUserChooser {
     appStore: AppStore
@@ -14,10 +13,6 @@ export default class UserChooser extends React.Component<IUserChooser & RouteCom
         this.props.appStore.usersStore.fetchUsers()
     }
 
-    userClick = (user: UserName) => {
-        this.props.history.push("/user/" + user.id)
-    }
-
     render() {
         return (
             <main>
@@ -25,7 +20,9 @@ export default class UserChooser extends React.Component<IUserChooser & RouteCom
                 {
                     this.props.appStore.usersStore.userNames.map(
                         (user, idx) => (
-                            <div key={idx} onClick={this.userClick.bind(this, user)}>{user.name}</div>
+                            <div key={idx}>
+                                <Link to={"/user/" + user.id}>{user.name}</Link>
+                            </div>
                         )
                     )
                 }
