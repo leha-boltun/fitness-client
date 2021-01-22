@@ -56,11 +56,8 @@ class TdInputCount extends React.Component<{ canAddWsets: boolean, onClose: (() 
 
 @observer
 export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteComponentProps> {
-    readonly state = {
-        firstFields: [] as HTMLInputElement[],
-        weightDiv: null as HTMLDivElement | null,
-        weightForms: [] as any[]
-    }
+    firstFields = [] as HTMLInputElement[]
+    weightForms = [] as any[]
 
     componentDidMount() {
         this.props.appStore.workoutStore.init(this.props.id)
@@ -72,7 +69,7 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
 
     doClose = (idx: number) => {
         this.props.appStore.workoutStore.workoutExers!![idx].setEditableId(-1)
-        this.state.weightForms[idx].resetForm()
+        this.weightForms[idx].resetForm()
     }
 
     render() {
@@ -171,7 +168,7 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                                     </table>
                                     }
                                     {workoutExer.hasCur() && <Formik
-                                        innerRef={(el: any) => {this.state.weightForms[exerIdx] = el}}
+                                        innerRef={(el: any) => {this.weightForms[exerIdx] = el}}
                                         initialValues={{weight: '', count: ''}}
                                         validate={values => {
                                             const errors: any = {};
@@ -187,7 +184,7 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                                             workoutExer.addWset(values.weight, values.count, () => {
                                                 setSubmitting(false)
                                                 resetForm()
-                                                this.state.firstFields[exerIdx]!!.focus()
+                                                this.firstFields[exerIdx]!!.focus()
                                             })
                                         }}
                                     >
@@ -200,7 +197,7 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                                                             (wset.id === workoutExer.editableId) ?
                                                             <TdInputWeight key={idx}
                                                                            canAddWsets={workoutStore.canAddWsets} innerRef={
-                                                                (el: HTMLInputElement) => this.state.firstFields[exerIdx] = el
+                                                                (el: HTMLInputElement) => this.firstFields[exerIdx] = el
                                                             }/> :
                                                             <td ref={
                                                                 elem => elem && elem!!
@@ -214,7 +211,7 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                                                     {
                                                         workoutExer.editableId == -1 && workoutStore.canAddWsets &&
                                                         <TdInputWeight canAddWsets={workoutStore.canAddWsets} innerRef={
-                                                            (el: HTMLInputElement) => this.state.firstFields[exerIdx] = el
+                                                            (el: HTMLInputElement) => this.firstFields[exerIdx] = el
                                                         }/>
                                                     }
                                                 </tr>
