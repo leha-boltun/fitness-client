@@ -42,10 +42,20 @@ export default class WorkoutStore {
         this.editingWeight = editing
     }
 
+    private reloadMain() {
+        this.apiHelper.workoutApi?.getMainUsingGET1(this.id).then((main) => {
+            this.setMain(new WorkoutMain(
+                main.wuserId,
+                moment(main.wdate).toDate(),
+                main.finished, main.weight, main.totalTime, main.weightDiff, main.weightDiffSame
+            ));
+        })
+    }
+
     @action
     setWeight(weight: string) {
         return this.apiHelper.workoutApi!!.editWeightUsingPATCH(this.id, weight).then(() => {
-            this.main!!.setWeight(weight)
+            this.reloadMain()
             this.setEditingWeight(false)
         })
     }
@@ -94,7 +104,7 @@ export default class WorkoutStore {
                 this.setMain(new WorkoutMain(
                     main.wuserId,
                     moment(main.wdate).toDate(),
-                    main.finished, main.weight, main.totalTime
+                    main.finished, main.weight, main.totalTime, main.weightDiff, main.weightDiffSame
                 ));
                 if (!this.main!!.finished) {
                     this.apiHelper.workoutApi!!.getNextEventNameUsingGET(id).then((next) => {
@@ -118,7 +128,7 @@ export default class WorkoutStore {
             this.apiHelper.workoutApi!!.processNextEventUsingPOST(this.id)
         promise.then((next) => {
             if (this.canSetWeight) {
-                this.main!!.setWeight(weight);
+                this.reloadMain()
             }
             if (next.name == "") {
                 this.main!!.setFinished(true)

@@ -145,7 +145,9 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                                         .addEventListener('long-press', () => {
                                             this.props.appStore.workoutStore.setEditingWeight(true)
                                         })
-                                } data-long-press-delay="300">Вес {workoutStore.main!!.weight} кг.</div>)
+                                } data-long-press-delay="300">Вес {workoutStore.main!!.weight} кг.
+                                    (<span>{workoutStore.main!!.weightDiff} кг</span>,&nbsp;
+                                    <span>{workoutStore.main!!.weightDiffSame} кг</span>)</div>)
                         }
                         {
                             workoutStore.workoutExers!!.map((workoutExer, exerIdx) => (
