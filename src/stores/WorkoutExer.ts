@@ -1,13 +1,15 @@
 import {action, makeObservable, observable} from "mobx";
 import Wset from "./Wset";
 import ApiHelper from "./ApiHelper";
+import PrevWsets from "./PrevWsets";
+import moment from "moment";
 
 export default class WorkoutExer {
     apiHelper: ApiHelper
 
     id?: number
 
-    prevId?: number
+    hasPrev: boolean
 
     curPrevId?: number
 
@@ -18,7 +20,7 @@ export default class WorkoutExer {
     wsets: Wset[] = []
 
     @observable
-    prevWsets: Wset[][] = []
+    prevWsetsArr: PrevWsets[] = []
 
     @observable
     editableId: number = -1
@@ -26,24 +28,15 @@ export default class WorkoutExer {
     constructor(id: number | undefined, name: string, prevId: number | undefined, apiHelper: ApiHelper) {
         this.apiHelper = apiHelper
         this.id = id
-        this.prevId = prevId
-        this.curPrevId = prevId
+        this.hasPrev = prevId != undefined
+        this.curPrevId = id
         this.name = name
         makeObservable(this)
         this.update()
     }
 
-    hasCur() {
+    get hasCur() {
         return this.id != undefined
-    }
-
-    hasPrev() {
-        return this.prevId != undefined
-    }
-
-    @action
-    setPrevWsets(wsets: Wset[]) {
-        this.prevWsets = [wsets]
     }
 
     @action
@@ -59,18 +52,18 @@ export default class WorkoutExer {
     @action.bound
     loadMorePrev() {
         if (this.curPrevId != undefined) {
-            this.apiHelper.workoutExerApi?.getWSetsAndPrevIdUsingGET(this.curPrevId!!).then(
+            this.apiHelper.workoutExerApi?.getWSetsPrevUsingGET(this.curPrevId!!).then(
                 (wsetsId) => {
-                    this.addPrevWsets(wsetsId.wsets, wsetsId.prevId)
+                    this.addPrevWsets(wsetsId.wsets, wsetsId.prevId, wsetsId.date)
                 }
             )
         }
     }
 
     @action
-    addPrevWsets(wsets: Wset[], prevId?: number) {
+    addPrevWsets(wsets: Wset[], prevId?: number, date?: string) {
         if (prevId != undefined) {
-            this.prevWsets.unshift(wsets)
+            this.prevWsetsArr.unshift(new PrevWsets(wsets, moment(date).format("DD.MM")))
         }
         this.curPrevId = prevId
     }
@@ -81,10 +74,8 @@ export default class WorkoutExer {
                 (wsets) => this.setWsets(wsets.map(wset => new Wset(wset.weight, wset.count, wset.id)))
             );
         }
-        if (setPrev && this.prevId != undefined) {
-            this.apiHelper.workoutExerApi?.getWsetsUsingGET(this.prevId).then(
-                (wsets) => this.setPrevWsets(wsets.map(wset => new Wset(wset.weight, wset.count, wset.id)))
-            );
+        if (setPrev && this.hasPrev) {
+            this.loadMorePrev()
         }
     }
 

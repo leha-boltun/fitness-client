@@ -211,19 +211,25 @@ export interface DUserMain {
 /**
  * 
  * @export
- * @interface DWSetsAndPrevId
+ * @interface DWSetsPrev
  */
-export interface DWSetsAndPrevId {
+export interface DWSetsPrev {
+    /**
+     * 
+     * @type {string}
+     * @memberof DWSetsPrev
+     */
+    date?: string;
     /**
      * 
      * @type {number}
-     * @memberof DWSetsAndPrevId
+     * @memberof DWSetsPrev
      */
     prevId?: number;
     /**
      * 
      * @type {Array<DWset>}
-     * @memberof DWSetsAndPrevId
+     * @memberof DWSetsPrev
      */
     wsets: Array<DWset>;
 }
@@ -2336,15 +2342,15 @@ export const WorkoutExerControllerApiFetchParamCreator = function (configuration
     return {
         /**
          * 
-         * @summary getWSetsAndPrevId
+         * @summary getWSetsPrev
          * @param {number} id id
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getWSetsAndPrevIdUsingGET(id: number, options: any = {}): FetchArgs {
+        getWSetsPrevUsingGET(id: number, options: any = {}): FetchArgs {
             // verify required parameter 'id' is not null or undefined
             if (id === null || id === undefined) {
-                throw new RequiredError('id','Required parameter id was null or undefined when calling getWSetsAndPrevIdUsingGET.');
+                throw new RequiredError('id','Required parameter id was null or undefined when calling getWSetsPrevUsingGET.');
             }
             const localVarPath = `/pi/workoutexer/{id}/previd`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
@@ -2415,13 +2421,13 @@ export const WorkoutExerControllerApiFp = function(configuration?: Configuration
     return {
         /**
          * 
-         * @summary getWSetsAndPrevId
+         * @summary getWSetsPrev
          * @param {number} id id
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getWSetsAndPrevIdUsingGET(id: number, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<DWSetsAndPrevId> {
-            const localVarFetchArgs = WorkoutExerControllerApiFetchParamCreator(configuration).getWSetsAndPrevIdUsingGET(id, options);
+        getWSetsPrevUsingGET(id: number, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<DWSetsPrev> {
+            const localVarFetchArgs = WorkoutExerControllerApiFetchParamCreator(configuration).getWSetsPrevUsingGET(id, options);
             return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
                 return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
                     if (response.status >= 200 && response.status < 300) {
@@ -2462,13 +2468,13 @@ export const WorkoutExerControllerApiFactory = function (configuration?: Configu
     return {
         /**
          * 
-         * @summary getWSetsAndPrevId
+         * @summary getWSetsPrev
          * @param {number} id id
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getWSetsAndPrevIdUsingGET(id: number, options?: any) {
-            return WorkoutExerControllerApiFp(configuration).getWSetsAndPrevIdUsingGET(id, options)(fetch, basePath);
+        getWSetsPrevUsingGET(id: number, options?: any) {
+            return WorkoutExerControllerApiFp(configuration).getWSetsPrevUsingGET(id, options)(fetch, basePath);
         },
         /**
          * 
@@ -2492,14 +2498,14 @@ export const WorkoutExerControllerApiFactory = function (configuration?: Configu
 export class WorkoutExerControllerApi extends BaseAPI {
     /**
      * 
-     * @summary getWSetsAndPrevId
+     * @summary getWSetsPrev
      * @param {number} id id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof WorkoutExerControllerApi
      */
-    public getWSetsAndPrevIdUsingGET(id: number, options?: any) {
-        return WorkoutExerControllerApiFp(this.configuration).getWSetsAndPrevIdUsingGET(id, options)(this.fetch, this.basePath);
+    public getWSetsPrevUsingGET(id: number, options?: any) {
+        return WorkoutExerControllerApiFp(this.configuration).getWSetsPrevUsingGET(id, options)(this.fetch, this.basePath);
     }
 
     /**

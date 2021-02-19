@@ -60,7 +60,6 @@ class TdInputCount extends React.Component<{ canAddWsets: boolean, onClose: (() 
 class SwipeableTable extends React.Component<{ workoutExer: WorkoutExer }> {
     private swipeDiv ?: HTMLDivElement = undefined
     private fillerDiv ?: HTMLDivElement = undefined
-    private lastItem ?: HTMLTableElement = undefined
     private scrollLeft: number = -1
 
     setStart = () => {
@@ -78,8 +77,7 @@ class SwipeableTable extends React.Component<{ workoutExer: WorkoutExer }> {
         this.swipeDiv = swipeDiv
     }
 
-    setLastItem = (lastItem: HTMLTableElement) => {
-        this.lastItem = lastItem
+    setLastItem = (lastItem: HTMLDivElement) => {
         this.fillerDiv!!.style.width = (this.swipeDiv!!.parentNode!! as HTMLDivElement).offsetWidth -
             lastItem!!.offsetWidth - 10 /*margin*/ + 'px'
     }
@@ -99,29 +97,32 @@ class SwipeableTable extends React.Component<{ workoutExer: WorkoutExer }> {
             <div
                 ref={this.setSwipeDiv}
                 className={style.scrollWrap}>
-                {workoutExer.prevWsets.map((wsetGroup, groupIdx) => (
-                    <table ref={(el) => {
-                        if (el != null && groupIdx === workoutExer.prevWsets.length - 1) {
+                {workoutExer.prevWsetsArr.map((wsetGroup, groupIdx) => (
+                    <div key={groupIdx} ref={(el) => {
+                        if (el != null && groupIdx === workoutExer.prevWsetsArr.length - 1) {
                             this.setLastItem(el)
                         }
-                    }} key={groupIdx} className={style.prevWeightTable}>
-                        <tbody>
-                        <tr>
-                            {
-                                wsetGroup.map((wset, idx) => (
-                                    <td key={idx}>{wset.weight}</td>
-                                ))
-                            }
-                        </tr>
-                        <tr>
-                            {
-                                wsetGroup.map((wset, idx) => (
-                                    <td key={idx}>{wset.count}</td>
-                                ))
-                            }
-                        </tr>
-                        </tbody>
-                    </table>
+                    }} className={style.prevWeightWrap}>
+                        <span className={style.prevWsetDate}>{wsetGroup.date}</span>
+                        {wsetGroup.wsets.length != 0 ? <table className={style.weightTable}>
+                            <tbody>
+                            <tr>
+                                {
+                                    wsetGroup.wsets.map((wset, idx) => (
+                                        <td key={idx}>{wset.weight}</td>
+                                    ))
+                                }
+                            </tr>
+                            <tr>
+                                {
+                                    wsetGroup.wsets.map((wset, idx) => (
+                                        <td key={idx}>{wset.count}</td>
+                                    ))
+                                }
+                            </tr>
+                            </tbody>
+                        </table> : <div>—</div>}
+                    </div>
                 ))}
                 <div ref={this.setWidth} className={style.scrollFiller}/>
             </div>
@@ -229,10 +230,10 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                                 <div key={exerIdx}>
                                     <div>{workoutExer.name}</div>
 
-                                    {workoutExer.hasPrev() &&
+                                    {workoutExer.hasPrev &&
                                     <SwipeableTable workoutExer={workoutExer}/>
                                     }
-                                    {workoutExer.hasCur() && <Formik
+                                    {workoutExer.hasCur && <Formik
                                         innerRef={(el: any) => {this.weightForms[exerIdx] = el}}
                                         initialValues={{weight: '', count: ''}}
                                         validate={values => {
