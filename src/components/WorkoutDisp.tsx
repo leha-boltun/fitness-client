@@ -6,6 +6,8 @@ import moment from "moment";
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import style from 'style.styl'
 import 'long-press-event'
+import Swipe from "react-easy-swipe";
+import WorkoutExer from "../stores/WorkoutExer";
 
 interface IWorkoutDisp {
     id: number
@@ -51,6 +53,79 @@ class TdInputCount extends React.Component<{ canAddWsets: boolean, onClose: (() 
                 )}
             </td>
         )
+    }
+}
+
+@observer
+class SwipeableTable extends React.Component<{ workoutExer: WorkoutExer }> {
+    private swipeDiv ?: HTMLDivElement = undefined
+    private fillerDiv ?: HTMLDivElement = undefined
+    private lastItem ?: HTMLTableElement = undefined
+    private scrollLeft: number = -1
+
+    setStart = () => {
+        this.scrollLeft = this.swipeDiv!!.scrollLeft
+    }
+
+    swipeRight = () => {
+        const workoutExer = this.props.workoutExer
+        if (this.scrollLeft < 10) {
+            workoutExer.loadMorePrev()
+        }
+    }
+
+    setSwipeDiv = (swipeDiv: HTMLDivElement) => {
+        this.swipeDiv = swipeDiv
+    }
+
+    setLastItem = (lastItem: HTMLTableElement) => {
+        this.lastItem = lastItem
+        this.fillerDiv!!.style.width = (this.swipeDiv!!.parentNode!! as HTMLDivElement).offsetWidth -
+            lastItem!!.offsetWidth - 10 /*margin*/ + 'px'
+    }
+
+    setWidth = (fillerDiv: HTMLDivElement) => {
+        this.fillerDiv = fillerDiv
+    }
+
+    render() {
+        const workoutExer = this.props.workoutExer
+        return (<Swipe
+            allowMouseEvents={true}
+            tolerance={60}
+            onSwipeStart={this.setStart}
+            innerRef={() => {}}
+            onSwipeRight={this.swipeRight}>
+            <div
+                ref={this.setSwipeDiv}
+                className={style.scrollWrap}>
+                {workoutExer.prevWsets.map((wsetGroup, groupIdx) => (
+                    <table ref={(el) => {
+                        if (el != null && groupIdx === workoutExer.prevWsets.length - 1) {
+                            this.setLastItem(el)
+                        }
+                    }} key={groupIdx} className={style.prevWeightTable}>
+                        <tbody>
+                        <tr>
+                            {
+                                wsetGroup.map((wset, idx) => (
+                                    <td key={idx}>{wset.weight}</td>
+                                ))
+                            }
+                        </tr>
+                        <tr>
+                            {
+                                wsetGroup.map((wset, idx) => (
+                                    <td key={idx}>{wset.count}</td>
+                                ))
+                            }
+                        </tr>
+                        </tbody>
+                    </table>
+                ))}
+                <div ref={this.setWidth} className={style.scrollFiller}/>
+            </div>
+        </Swipe>)
     }
 }
 
@@ -155,24 +230,7 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                                     <div>{workoutExer.name}</div>
 
                                     {workoutExer.hasPrev() &&
-                                    <table className={style.weightTable}>
-                                        <tbody>
-                                        <tr>
-                                            {
-                                                workoutExer.prevWsets.map((wset, idx) => (
-                                                    <td key={idx}>{wset.weight}</td>
-                                                ))
-                                            }
-                                        </tr>
-                                        <tr>
-                                            {
-                                                workoutExer.prevWsets.map((wset, idx) => (
-                                                    <td key={idx}>{wset.count}</td>
-                                                ))
-                                            }
-                                        </tr>
-                                        </tbody>
-                                    </table>
+                                    <SwipeableTable workoutExer={workoutExer}/>
                                     }
                                     {workoutExer.hasCur() && <Formik
                                         innerRef={(el: any) => {this.weightForms[exerIdx] = el}}
@@ -195,7 +253,7 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                                             })
                                         }}
                                     >
-                                        <Form>
+                                        <Form className={style.scrollWrap}>
                                             <table className={style.weightTable}>
                                                 <tbody>
                                                 <tr>

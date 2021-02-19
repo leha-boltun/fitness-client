@@ -211,6 +211,26 @@ export interface DUserMain {
 /**
  * 
  * @export
+ * @interface DWSetsAndPrevId
+ */
+export interface DWSetsAndPrevId {
+    /**
+     * 
+     * @type {number}
+     * @memberof DWSetsAndPrevId
+     */
+    prevId?: number;
+    /**
+     * 
+     * @type {Array<DWset>}
+     * @memberof DWSetsAndPrevId
+     */
+    wsets: Array<DWset>;
+}
+
+/**
+ * 
+ * @export
  * @interface DWorkout
  */
 export interface DWorkout {
@@ -2316,6 +2336,41 @@ export const WorkoutExerControllerApiFetchParamCreator = function (configuration
     return {
         /**
          * 
+         * @summary getWSetsAndPrevId
+         * @param {number} id id
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getWSetsAndPrevIdUsingGET(id: number, options: any = {}): FetchArgs {
+            // verify required parameter 'id' is not null or undefined
+            if (id === null || id === undefined) {
+                throw new RequiredError('id','Required parameter id was null or undefined when calling getWSetsAndPrevIdUsingGET.');
+            }
+            const localVarPath = `/pi/workoutexer/{id}/previd`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarUrlObj = url.parse(localVarPath, true);
+            const localVarRequestOptions = Object.assign({ method: 'GET' }, options);
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication basicAuth required
+            // http basic authentication required
+            if (configuration && (configuration.username || configuration.password)) {
+                localVarHeaderParameter["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+            }
+
+            localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = Object.assign({}, localVarHeaderParameter, options.headers);
+
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary getWsets
          * @param {number} id id
          * @param {*} [options] Override http request option.
@@ -2360,6 +2415,25 @@ export const WorkoutExerControllerApiFp = function(configuration?: Configuration
     return {
         /**
          * 
+         * @summary getWSetsAndPrevId
+         * @param {number} id id
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getWSetsAndPrevIdUsingGET(id: number, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<DWSetsAndPrevId> {
+            const localVarFetchArgs = WorkoutExerControllerApiFetchParamCreator(configuration).getWSetsAndPrevIdUsingGET(id, options);
+            return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
+                return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json();
+                    } else {
+                        throw response;
+                    }
+                });
+            };
+        },
+        /**
+         * 
          * @summary getWsets
          * @param {number} id id
          * @param {*} [options] Override http request option.
@@ -2388,6 +2462,16 @@ export const WorkoutExerControllerApiFactory = function (configuration?: Configu
     return {
         /**
          * 
+         * @summary getWSetsAndPrevId
+         * @param {number} id id
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getWSetsAndPrevIdUsingGET(id: number, options?: any) {
+            return WorkoutExerControllerApiFp(configuration).getWSetsAndPrevIdUsingGET(id, options)(fetch, basePath);
+        },
+        /**
+         * 
          * @summary getWsets
          * @param {number} id id
          * @param {*} [options] Override http request option.
@@ -2406,6 +2490,18 @@ export const WorkoutExerControllerApiFactory = function (configuration?: Configu
  * @extends {BaseAPI}
  */
 export class WorkoutExerControllerApi extends BaseAPI {
+    /**
+     * 
+     * @summary getWSetsAndPrevId
+     * @param {number} id id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WorkoutExerControllerApi
+     */
+    public getWSetsAndPrevIdUsingGET(id: number, options?: any) {
+        return WorkoutExerControllerApiFp(this.configuration).getWSetsAndPrevIdUsingGET(id, options)(this.fetch, this.basePath);
+    }
+
     /**
      * 
      * @summary getWsets

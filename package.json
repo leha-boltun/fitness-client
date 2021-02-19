@@ -25,6 +25,7 @@
     "query-string": "^6.13.8",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
+    "react-easy-swipe": "0.0.21",
     "react-router-dom": "^5.2.0",
     "string-replace-loader": "2.3.0",
     "style-loader": "^2.0.0",

@@ -9,6 +9,8 @@ export default class WorkoutExer {
 
     prevId?: number
 
+    curPrevId?: number
+
     @observable
     name: string
 
@@ -16,7 +18,7 @@ export default class WorkoutExer {
     wsets: Wset[] = []
 
     @observable
-    prevWsets: Wset[] = []
+    prevWsets: Wset[][] = []
 
     @observable
     editableId: number = -1
@@ -25,6 +27,7 @@ export default class WorkoutExer {
         this.apiHelper = apiHelper
         this.id = id
         this.prevId = prevId
+        this.curPrevId = prevId
         this.name = name
         makeObservable(this)
         this.update()
@@ -40,7 +43,7 @@ export default class WorkoutExer {
 
     @action
     setPrevWsets(wsets: Wset[]) {
-        this.prevWsets = wsets
+        this.prevWsets = [wsets]
     }
 
     @action
@@ -53,13 +56,32 @@ export default class WorkoutExer {
         this.editableId = id
     }
 
-    update() {
+    @action.bound
+    loadMorePrev() {
+        if (this.curPrevId != undefined) {
+            this.apiHelper.workoutExerApi?.getWSetsAndPrevIdUsingGET(this.curPrevId!!).then(
+                (wsetsId) => {
+                    this.addPrevWsets(wsetsId.wsets, wsetsId.prevId)
+                }
+            )
+        }
+    }
+
+    @action
+    addPrevWsets(wsets: Wset[], prevId?: number) {
+        if (prevId != undefined) {
+            this.prevWsets.unshift(wsets)
+        }
+        this.curPrevId = prevId
+    }
+
+    update(setPrev: boolean = true) {
         if (this.id != undefined) {
             this.apiHelper.workoutExerApi?.getWsetsUsingGET(this.id).then(
                 (wsets) => this.setWsets(wsets.map(wset => new Wset(wset.weight, wset.count, wset.id)))
             );
         }
-        if (this.prevId != undefined) {
+        if (setPrev && this.prevId != undefined) {
             this.apiHelper.workoutExerApi?.getWsetsUsingGET(this.prevId).then(
                 (wsets) => this.setPrevWsets(wsets.map(wset => new Wset(wset.weight, wset.count, wset.id)))
             );
@@ -72,8 +94,8 @@ export default class WorkoutExer {
         this.apiHelper.wsetApi!!.createWsetUsingPOST({weight: weight, count: count, id: -1}, this.id!!) :
             this.apiHelper.wsetApi!!.editWsetUsingPUT({weight: weight, count: count, id: this.editableId})
         promise.then( () => {
-            this.editableId = -1
-            this.update();
+            this.setEditableId(-1)
+            this.update(false);
             callback()
         } )
     }
