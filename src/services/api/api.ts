@@ -1741,6 +1741,35 @@ export const WorkoutControllerApiFetchParamCreator = function (configuration?: C
         },
         /**
          * 
+         * @summary getMaxUndoSeconds
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getMaxUndoSecondsUsingGET(options: any = {}): FetchArgs {
+            const localVarPath = `/pi/workout/maxUndoSeconds`;
+            const localVarUrlObj = url.parse(localVarPath, true);
+            const localVarRequestOptions = Object.assign({ method: 'GET' }, options);
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication basicAuth required
+            // http basic authentication required
+            if (configuration && (configuration.username || configuration.password)) {
+                localVarHeaderParameter["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+            }
+
+            localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = Object.assign({}, localVarHeaderParameter, options.headers);
+
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary getNextEventName
          * @param {number} id id
          * @param {*} [options] Override http request option.
@@ -1923,6 +1952,41 @@ export const WorkoutControllerApiFetchParamCreator = function (configuration?: C
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @summary undoEvent
+         * @param {number} id id
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        undoEventUsingDELETE(id: number, options: any = {}): FetchArgs {
+            // verify required parameter 'id' is not null or undefined
+            if (id === null || id === undefined) {
+                throw new RequiredError('id','Required parameter id was null or undefined when calling undoEventUsingDELETE.');
+            }
+            const localVarPath = `/pi/workout/{id}/undo`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarUrlObj = url.parse(localVarPath, true);
+            const localVarRequestOptions = Object.assign({ method: 'DELETE' }, options);
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication basicAuth required
+            // http basic authentication required
+            if (configuration && (configuration.username || configuration.password)) {
+                localVarHeaderParameter["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
+            }
+
+            localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            delete localVarUrlObj.search;
+            localVarRequestOptions.headers = Object.assign({}, localVarHeaderParameter, options.headers);
+
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -2001,6 +2065,24 @@ export const WorkoutControllerApiFp = function(configuration?: Configuration) {
          */
         getMainUsingGET1(id: number, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<DWorkoutMain> {
             const localVarFetchArgs = WorkoutControllerApiFetchParamCreator(configuration).getMainUsingGET1(id, options);
+            return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
+                return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json();
+                    } else {
+                        throw response;
+                    }
+                });
+            };
+        },
+        /**
+         * 
+         * @summary getMaxUndoSeconds
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getMaxUndoSecondsUsingGET(options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<number> {
+            const localVarFetchArgs = WorkoutControllerApiFetchParamCreator(configuration).getMaxUndoSecondsUsingGET(options);
             return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
                 return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
                     if (response.status >= 200 && response.status < 300) {
@@ -2107,6 +2189,25 @@ export const WorkoutControllerApiFp = function(configuration?: Configuration) {
                 });
             };
         },
+        /**
+         * 
+         * @summary undoEvent
+         * @param {number} id id
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        undoEventUsingDELETE(id: number, options?: any): (fetch?: FetchAPI, basePath?: string) => Promise<DNextEvent> {
+            const localVarFetchArgs = WorkoutControllerApiFetchParamCreator(configuration).undoEventUsingDELETE(id, options);
+            return (fetch: FetchAPI = portableFetch, basePath: string = BASE_PATH) => {
+                return fetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options).then((response) => {
+                    if (response.status >= 200 && response.status < 300) {
+                        return response.json();
+                    } else {
+                        throw response;
+                    }
+                });
+            };
+        },
     }
 };
 
@@ -2161,6 +2262,15 @@ export const WorkoutControllerApiFactory = function (configuration?: Configurati
         },
         /**
          * 
+         * @summary getMaxUndoSeconds
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getMaxUndoSecondsUsingGET(options?: any) {
+            return WorkoutControllerApiFp(configuration).getMaxUndoSecondsUsingGET(options)(fetch, basePath);
+        },
+        /**
+         * 
          * @summary getNextEventName
          * @param {number} id id
          * @param {*} [options] Override http request option.
@@ -2209,6 +2319,16 @@ export const WorkoutControllerApiFactory = function (configuration?: Configurati
          */
         processNextEventUsingPOST(id: number, options?: any) {
             return WorkoutControllerApiFp(configuration).processNextEventUsingPOST(id, options)(fetch, basePath);
+        },
+        /**
+         * 
+         * @summary undoEvent
+         * @param {number} id id
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        undoEventUsingDELETE(id: number, options?: any) {
+            return WorkoutControllerApiFp(configuration).undoEventUsingDELETE(id, options)(fetch, basePath);
         },
     };
 };
@@ -2273,6 +2393,17 @@ export class WorkoutControllerApi extends BaseAPI {
 
     /**
      * 
+     * @summary getMaxUndoSeconds
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WorkoutControllerApi
+     */
+    public getMaxUndoSecondsUsingGET(options?: any) {
+        return WorkoutControllerApiFp(this.configuration).getMaxUndoSecondsUsingGET(options)(this.fetch, this.basePath);
+    }
+
+    /**
+     * 
      * @summary getNextEventName
      * @param {number} id id
      * @param {*} [options] Override http request option.
@@ -2330,6 +2461,18 @@ export class WorkoutControllerApi extends BaseAPI {
      */
     public processNextEventUsingPOST(id: number, options?: any) {
         return WorkoutControllerApiFp(this.configuration).processNextEventUsingPOST(id, options)(this.fetch, this.basePath);
+    }
+
+    /**
+     * 
+     * @summary undoEvent
+     * @param {number} id id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WorkoutControllerApi
+     */
+    public undoEventUsingDELETE(id: number, options?: any) {
+        return WorkoutControllerApiFp(this.configuration).undoEventUsingDELETE(id, options)(this.fetch, this.basePath);
     }
 
 }

@@ -60,6 +60,7 @@ class TdInputCount extends React.Component<{ canAddWsets: boolean, onClose: (() 
 class SwipeableTable extends React.Component<{ workoutExer: WorkoutExer }> {
     private swipeDiv ?: HTMLDivElement = undefined
     private fillerDiv ?: HTMLDivElement = undefined
+    private lastItem ?: HTMLDivElement = undefined
     private scrollLeft: number = -1
 
     setStart = () => {
@@ -75,15 +76,24 @@ class SwipeableTable extends React.Component<{ workoutExer: WorkoutExer }> {
 
     setSwipeDiv = (swipeDiv: HTMLDivElement) => {
         this.swipeDiv = swipeDiv
+        this.trySetWidth()
     }
 
     setLastItem = (lastItem: HTMLDivElement) => {
-        this.fillerDiv!!.style.width = (this.swipeDiv!!.parentNode!! as HTMLDivElement).offsetWidth -
-            lastItem!!.offsetWidth - 10 /*margin*/ + 'px'
+        this.lastItem = lastItem
+        this.trySetWidth()
+    }
+
+    trySetWidth() {
+        if (this.fillerDiv && this.lastItem && this.swipeDiv) {
+            this.fillerDiv.style.width = (this.swipeDiv.parentNode!! as HTMLDivElement).offsetWidth -
+                this.lastItem.offsetWidth - 10 /*margin*/ + 'px'
+        }
     }
 
     setWidth = (fillerDiv: HTMLDivElement) => {
         this.fillerDiv = fillerDiv
+        this.trySetWidth()
     }
 
     render() {
@@ -161,7 +171,7 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                     <main>
                         <h1>Тренировка {moment(workoutStore.main!!.wdate).format("DD.MM.YYYY")}</h1>
                         <div><Link to={"/user/" + workoutStore.main!!.wuserId}>Другие тренировки</Link></div>
-                        {
+                        <div>{
                             !workoutStore.main!!.finished ?
                                 (
                                     workoutStore.canSetWeight ?
@@ -187,9 +197,10 @@ export default class WorkoutDisp extends React.Component<IWorkoutDisp & RouteCom
                                             </Form>
                                         </Formik> :
                                         <button onClick={this.doNext}>{workoutStore.next!!}</button>
-                                )
-                                : <div>Тренировка завершена, время {workoutStore.main!!.totalTime}</div>
+                                ) : <span>Тренировка завершена, время {workoutStore.main!!.totalTime}</span>
                         }
+                        {workoutStore.canUndo && <button className={style.undoBtn} onClick={workoutStore.undoCurrent}>Отменить</button>}
+                        </div>
                         {
                             workoutStore.editingWeight ?
                                 (

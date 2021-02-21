@@ -51,7 +51,7 @@ export default class WorkoutMain {
     }
 
     @action
-    setTotalTime(totalTime: string) {
+    setTotalTime(totalTime?: string) {
         this.totalTime = totalTime
     }
 

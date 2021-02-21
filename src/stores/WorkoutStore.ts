@@ -4,6 +4,7 @@ import moment from "moment";
 import WorkoutMain from "./WorkoutMain";
 import TimeStamp from "./TimeStamp";
 import WorkoutExer from "./WorkoutExer";
+import {DNextEvent} from "../services/api";
 
 export default class WorkoutStore {
     @observable
@@ -25,10 +26,17 @@ export default class WorkoutStore {
     workoutExers?: WorkoutExer[] = undefined
 
     @observable
+    canUndo: boolean = false
+
+    @observable
     id: number = -1
 
     @observable
     editingWeight?: boolean = false
+
+    maxUndoSeconds?: number
+
+    undoTimeout?: number
 
     private apiHelper: ApiHelper;
 
@@ -69,6 +77,7 @@ export default class WorkoutStore {
     reset() {
         this.id = -1
         this.editingWeight = false
+        clearTimeout(this.undoTimeout)
     }
 
     @action
@@ -86,9 +95,26 @@ export default class WorkoutStore {
         this.main = main
     }
 
+    @action.bound
+    disableUndo() {
+        this.canUndo = false
+    }
+
     @action
     setTimeStamps(timestamps: TimeStamp[]) {
         this.timeStamps = timestamps
+        clearTimeout(this.undoTimeout)
+        if (this.timeStamps.length != 0) {
+            const seconds = moment().diff(moment(this.timeStamps[0].time, 'HH:mm:ss'), 'seconds')
+            if (seconds < this.maxUndoSeconds!!) {
+                this.canUndo = true
+                this.undoTimeout = window.setTimeout(this.disableUndo, (this.maxUndoSeconds!! - seconds) * 1000)
+            } else {
+                this.canUndo = false
+            }
+        } else {
+            this.canUndo = false
+        }
     }
 
     @action
@@ -111,7 +137,12 @@ export default class WorkoutStore {
                         this.setNext(next.name, next.canAddWsets, next.canSetWeight)
                     })
                 }
-            }), this.apiHelper.workoutApi!!.getTimestampsUsingGET(id).then((timeStamps) => {
+            }), this.apiHelper.workoutApi!!.getMaxUndoSecondsUsingGET().then(
+                (num) => {
+                    this.maxUndoSeconds = num
+                    return this.apiHelper.workoutApi!!.getTimestampsUsingGET(id)
+                }
+            ).then((timeStamps) => {
                 this.setTimeStamps(timeStamps.map((t) => new TimeStamp(t.time, t.type,
                     t.timeDiff ? moment(t.timeDiff, "HH:mm:ss").format("HH:mm:ss") : "")))
             }), this.apiHelper.workoutApi?.getExersUsingGET(id).then( (exers) => {
@@ -122,12 +153,21 @@ export default class WorkoutStore {
         })
     }
 
+    private processNext(next: DNextEvent) {
+        this.setNext(next.name, next.canAddWsets, next.canSetWeight)
+        this.apiHelper.workoutApi!!.getTimestampsUsingGET(this.id).then((timeStamps) => {
+            this.setTimeStamps(timeStamps.map((t) => new TimeStamp(t.time, t.type, t.timeDiff || "")))
+        })
+    }
+
     @action.bound
     doNext(weight: string = "") {
+        this.setEditingWeight(false)
         const promise = (this.canSetWeight) ? this.apiHelper.workoutApi!!.processNextEventSetWeightUsingPOST(this.id, weight) :
             this.apiHelper.workoutApi!!.processNextEventUsingPOST(this.id)
         promise.then((next) => {
             if (this.canSetWeight) {
+                // Update weight
                 this.reloadMain()
             }
             if (next.name == "") {
@@ -136,10 +176,19 @@ export default class WorkoutStore {
                     (totalTime) => this.main!!.setTotalTime(totalTime)
                 );
             }
-            this.setNext(next.name, next.canAddWsets, next.canSetWeight)
-            this.apiHelper.workoutApi!!.getTimestampsUsingGET(this.id).then((timeStamps) => {
-                this.setTimeStamps(timeStamps.map((t) => new TimeStamp(t.time, t.type, t.timeDiff || "")))
-            })
+            this.processNext(next)
+        })
+    }
+
+    @action.bound
+    undoCurrent() {
+        this.setEditingWeight(false)
+        this.apiHelper.workoutApi?.undoEventUsingDELETE(this.id).then( (next) => {
+            if (this.main!!.finished) {
+                this.main!!.setTotalTime(undefined)
+            }
+            this.reloadMain()
+            this.processNext(next)
         })
     }
 }
