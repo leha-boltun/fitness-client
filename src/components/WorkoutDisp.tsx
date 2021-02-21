@@ -121,7 +121,7 @@ class SwipeableTable extends React.Component<{ workoutExer: WorkoutExer }> {
                                 }
                             </tr>
                             </tbody>
-                        </table> : <div>—</div>}
+                        </table> : <div className={style.blankWeight}>—</div>}
                     </div>
                 ))}
                 <div ref={this.setWidth} className={style.scrollFiller}/>
