@@ -104,7 +104,7 @@ export default class WorkoutStore {
     setTimeStamps(timestamps: TimeStamp[]) {
         this.timeStamps = timestamps
         clearTimeout(this.undoTimeout)
-        if (this.timeStamps.length != 0) {
+        if (this.timeStamps.length != 0 && moment(this.main!!.wdate).isSame(moment(), 'day')) {
             const seconds = moment().diff(moment(this.timeStamps[0].time, 'HH:mm:ss'), 'seconds')
             if (seconds < this.maxUndoSeconds!!) {
                 this.canUndo = true
